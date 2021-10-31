@@ -115,54 +115,44 @@ void startGame(int turn){
 
 		// HUMAN INPUT
 		if (turn == PLAYER1){
-			printf("You can insert in the following positions : ");
-			for(int i=0; i < GRID; i++)
-				for (int j = 0; j < GRID; j++)
-					if (board[i][j] == ' ')
-						printf("%d ", (i * 3 + j) + 1);
-			printf("\n\nEnter the position = ");
-			scanf("%d",&n);
+			std::cout<<"\n\nEnter move = ";
+			std::cin >> n;
 			n--;
 			row = n / GRID;
 			col = n % GRID; 
 			if(board[row][col] == ' ' && n<9 && n>=0){
 				board[row][col] = PLAYER1MOVE; 
-				printf ("\nPLAYER1 has put a %c in cell %d\n\n", PLAYER1MOVE, n+1); 
+				std::cout<<"\nPLAYER1 has put an " << PLAYER1MOVE << " in cell " << n+1 << "\n\n";
 				displayBoard(board); 
 				index ++; 
 				turn = PLAYER2;
 			}
 			else if(board[row][col] != ' ' && n<9 && n>=0){
-				printf("\nPosition is occupied, select any one place from the available places\n\n");
+				std::cout<<"\nPosition is occupied\n\n";
 			}
 			else if(n<0 || n>8){
-				printf("Invalid position\n");
+				std::cout<<"Invalid position\n";
 			}
 		} 
 
 		if (turn == PLAYER2){
-			printf("You can insert in the following positions : ");
-			for(int i=0; i < GRID; i++)
-				for (int j = 0; j < GRID; j++)
-					if (board[i][j] == ' ')
-						printf("%d ", (i * 3 + j) + 1);
-			printf("\n\nEnter the position = ");
-			scanf("%d",&n);
+			std::cout<<"\n\nEnter move = ";
+			std::cin >> n;
 			n--;
 			row = n / GRID;
 			col = n % GRID; 
 			if(board[row][col] == ' ' && n<9 && n>=0){
 				board[row][col] = PLAYER2MOVE; 
-				printf ("\nPLAYER2 has put a %c in cell %d\n\n", PLAYER2MOVE, n+1); 
+				std::cout<<"\nPLAYER2 has put an " << PLAYER2MOVE << " in cell " << n+1 << "\n\n";
 				displayBoard(board); 
 				index ++; 
 				turn = PLAYER1;
 			}
 			else if(board[row][col] != ' ' && n<9 && n>=0){
-				printf("\nPosition is occupied, select any one place from the available places\n\n");
+				std::cout<<"\nPosition is occupied\n\n";
 			}
 			else if(n<0 || n>8){
-				printf("Invalid position\n");
+				std::cout<<"Invalid position\n";
 			}
 		} 
 		
@@ -170,11 +160,10 @@ void startGame(int turn){
  
 	} 
 
-	// If the game has drawn 
+	// draw
 	if (endGame(board) == false && index == GRID * GRID) 
 		std::cout << "Draw\n"; 
 	else{ 
-		// Toggling the user to declare the actual winner 
 		if (turn == PLAYER1) 
 			turn = PLAYER2; 
 		else if (turn == PLAYER2) 
@@ -224,7 +213,7 @@ bool checkDiag(char board[][GRID]) {
 
 void declareWinner(int turn){ 
 	if (turn == PLAYER2) 
-		printf("PLAYER2 has won\n"); 
+		std::cout<<"PLAYER2 has won\n"; 
 	else
-		printf("PLAYER1 has won\n"); 
+		std::cout<<"PLAYER1 has won\n"; 
 } 

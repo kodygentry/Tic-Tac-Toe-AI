@@ -11,14 +11,16 @@ class AI{
      void GenerateChildren(int, bool, Node *);
      // nodes will be of type char double array
      std::vector<std::vector<char>> mkMove();
+     std::vector<std::vector<char>> playMove(std::vector<std::vector<char>>);
      void setBoard(std::vector<std::vector<char>>);
   private:
      int ABMinimax(Node *, bool, int, int);
      // ai has Heuristic evaluation functions
-     int Heuristic1();
+     int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2();
      int Heuristic3();
      int Heuristic4();
+     int findPossibleWins(std::vector<std::vector<char>>, bool);
      Node *root;
      bool turn;
      int plyMAX, alpha, beta;

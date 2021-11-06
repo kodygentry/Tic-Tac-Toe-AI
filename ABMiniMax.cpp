@@ -15,6 +15,22 @@ AI::AI(Node *root, bool order, int ply, char Mark){
   plyMAX = ply;
 }
 
+std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board){
+  Node r = Node(board);
+  root = &r;
+  GenerateChildren(0, turn, root); 
+  int bestMove = 0;
+  std::vector<std::vector<char>> bestPlay;
+  for(auto i : root->getChildren()){
+    int mo = ABMinimax(i, turn, 500, -500);
+    if(mo > bestMove){
+      bestMove = mo;
+      bestPlay = i->getBoard();
+    }
+  }
+  return bestPlay;
+}
+
 int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
   if(node -> getChildren().empty()){
     //return heuristic function
@@ -44,9 +60,12 @@ int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
   }
 }
 
-int AI::Heuristic1(){
-  return 0;
+int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
+	int myPossibleWins = findPossibleWins(board, currentPlayer);
+	int opponentPlayerWins = findPossibleWins(board, !currentPlayer);
+	return myPossibleWins - opponentPlayerWins;
 }
+
 
 int AI::Heuristic2(){
   return 0;
@@ -59,6 +78,7 @@ int AI::Heuristic3(){
 int AI::Heuristic4(){
   return 0;
 }
+
 
 void AI::GenerateChildren(int ply, bool curTurn, Node *curNode){
   std::vector<std::vector<char>> b = curNode->getBoard();
@@ -92,3 +112,50 @@ void AI::setBoard(std::vector<std::vector<char>> board){
   this->root = &nRoot;
 }
 
+int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
+	char myPlayerMove = (currentPlayer) ? mark : oppMark;
+	int winCount = 0;
+
+	// Check # of horizontal possible wins
+	for(int x = 0; x < 3; x++) {
+		int horizontalCount = 0;
+		for(int y = 0; y < 3; y++) {
+			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
+				horizontalCount++;
+			}
+		}
+
+		if(horizontalCount == 3) {
+			winCount++;
+		}
+	}
+
+	// Check # of vertical possible wins
+	for(int y = 0; y < 3; y++) {
+		int verticalCount = 0;
+		for(int x = 0; x < 3; x++) {
+			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
+				verticalCount++;
+			}
+		}
+
+		if(verticalCount == 3) {
+			winCount++;
+		}
+	}
+
+	// Check # of diagonal possible wins
+	if((board[0][0] == ' ' || board[0][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[2][2] == ' ' || board[2][2] == myPlayerMove)) {
+		winCount++;
+	}
+
+	if((board[2][0] == ' ' || board[2][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
+		winCount++;
+	}
+
+	return winCount;
+}

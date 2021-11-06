@@ -2,9 +2,54 @@
 #include <string>
 
 
-
-const char COMPUTERMOVE = 'O', HUMAN = 'X';
+const int PLAYER1 = 1, PLAYER2 = 2;
+const char PLAYER1MOVE = 'X', PLAYER2MOVE = 'O';
 const int GRID = 3; // value of size of board (ex. GRID 3 = 3x3. GRID 4 = 4x4)
+
+
+// inititalize
+void displayBoardLayout();
+void displayBoard(char board[][GRID]);
+void initializeBoard(char board[][GRID]);
+
+// game logic
+void startGame(int);
+bool endGame(char board[][GRID]);
+bool checkRow(char board[][GRID]);
+bool checkCol(char board[][GRID]);
+bool checkDiag(char board[][GRID]);
+void declareWinner(int);
+
+// AI implementation
+int heuristicOne(char board[][GRID], int currentPlayer);
+int findPossibleWins(char board[][GRID], int currentPlayer);
+
+
+int main(){
+    std::cout << "\n---------------------------------------------------------------\n"
+              << "\n\t\t\tTic-Tac-Toe\n"
+              << "\n---------------------------------------------------------------\n";
+
+    /*
+        temp input loop
+        later implement AI vs AI
+    */
+    char cont = 'n'; // used for continuing game or not
+    do {
+        char choice; // used for deciding who goes first
+        std::cout << "Do you want to start first? (y/n) : ";
+	 	std::cin >> choice;
+        if(choice == 'n' || choice == 'N')
+            startGame(PLAYER2);
+        else if(choice == 'y' || choice == 'Y')
+            startGame(PLAYER1);
+        else
+            std::cout << "Invalid input..." << std::endl;
+
+        std::cout << "Keep playing? (y/n) : ";
+        std::cin >> cont;
+    } while(cont == 'y');
+}
 
 
 void displayBoardLayout(){
@@ -14,29 +59,172 @@ void displayBoardLayout(){
               << "\t\t\t-----------" << std::endl
               << "\t\t\t 7 | 8 | 9 \n" << std::endl;
 }
+
 void displayBoard(char board[][GRID]){
     std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
               << "\t\t\t-----------" << std::endl
               << "\t\t\t " << (board[1][0]) << " | " << (board[1][1]) << " | " << (board[1][2]) << std::endl
               << "\t\t\t-----------" << std::endl
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
-}   
+}
 
 void initializeBoard(char board[][GRID]){
     for (int i = 0; i < GRID; i++){
-		for (int j = 0; j < GRID; j++) 
-			board[i][j] = ' '; 
+		for (int j = 0; j < GRID; j++)
+			board[i][j] = ' ';
     }
 }
 
-int main(){
+void startGame(int turn){
     char board[GRID][GRID];
-    std::cout << "\n---------------------------------------------------------------\n"
-              << "\n\t\t\tTic-Tac-Toe\n"
-              << "\n---------------------------------------------------------------\n";
-    displayBoardLayout();
+    int index = 0, row = 0, col = 0; // for depth index
+
     initializeBoard(board);
-    displayBoard(board);     
-    return 0;
+    displayBoardLayout();
+
+    while (endGame(board) == false && index != GRID * GRID){
+		int n;
+
+		/*
+        // AI player
+			// insert min max here
+			char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
+			row = n / GRID;
+			col = n % GRID;
+			board[row][col] = playerMove;
+			std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+			displayBoard(board);
+			index++;
+			turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+		*/
+
+		// HUMAN INPUT
+        std::cout<<"\n\nEnter move = ";
+        std::cin >> n;
+        n--;
+        row = n / GRID;
+        col = n % GRID;
+        if(board[row][col] == ' ' && n < 9 && n >= 0){
+            char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
+            board[row][col] = playerMove;
+            std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+            displayBoard(board);
+            index++;
+            turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+        } else if(board[row][col] != ' ' && n < 9 && n >= 0){
+            std::cout << "\nPosition is occupied\n\n";
+        } else if(n < 0 || n > 8){
+            std::cout << "Invalid position\n";
+        }
+	}
+
+	// draw
+	if (endGame(board) == false && index == GRID * GRID) {
+		std::cout << "Draw\n";
+    } else {
+        turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+
+		declareWinner(turn);
+	}
 }
 
+bool endGame(char board[][GRID]){
+    return (checkDiag(board) || checkCol(board) || checkRow(board));
+}
+
+bool checkRow(char board[][GRID]) {
+	for (int i = 0; i < GRID; i++) {
+		if (board[i][0] == board[i][1] &&
+			board[i][1] == board[i][2] &&
+			board[i][0] != ' ')
+			return (true);
+	}
+	return(false);
+}
+
+bool checkCol(char board[][GRID]) {
+	for (int i = 0; i < GRID; i++) {
+		if (board[0][i] == board[1][i] &&
+			board[1][i] == board[2][i] &&
+			board[0][i] != ' ')
+			return (true);
+	}
+	return(false);
+}
+
+bool checkDiag(char board[][GRID]) {
+	if (board[0][0] == board[1][1] &&
+		board[1][1] == board[2][2] &&
+		board[0][0] != ' ')
+		return(true);
+
+	if (board[0][2] == board[1][1] &&
+		board[1][1] == board[2][0] &&
+		board[0][2] != ' ')
+		return(true);
+
+	return(false);
+}
+
+void declareWinner(int turn){
+	if (turn == PLAYER2)
+		std::cout<<"PLAYER2 has won\n";
+	else
+		std::cout<<"PLAYER1 has won\n";
+}
+
+// AI Functions
+int heuristicOne(char board[][GRID], int currentPlayer) {
+	int oppositePlayer = (currentPlayer == PLAYER1) ? PLAYER2 : PLAYER1;
+	int myPossibleWins = findPossibleWins(board, currentPlayer);
+	int opponentPlayerWins = findPossibleWins(board, oppositePlayer);
+	return myPossibleWins - opponentPlayerWins;
+}
+
+int findPossibleWins(char board[][GRID], int currentPlayer) {
+	char myPlayerMove = (currentPlayer == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
+	int winCount = 0;
+
+	// Check # of horizontal possible wins
+	for(int x = 0; x < 3; x++) {
+		int horizontalCount = 0;
+		for(int y = 0; y < 3; y++) {
+			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
+				horizontalCount++;
+			}
+		}
+
+		if(horizontalCount == 3) {
+			winCount++;
+		}
+	}
+
+	// Check # of vertical possible wins
+	for(int y = 0; y < 3; y++) {
+		int verticalCount = 0;
+		for(int x = 0; x < 3; x++) {
+			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
+				verticalCount++;
+			}
+		}
+
+		if(verticalCount == 3) {
+			winCount++;
+		}
+	}
+
+	// Check # of diagonal possible wins
+	if((board[0][0] == ' ' || board[0][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[2][2] == ' ' || board[2][2] == myPlayerMove)) {
+		winCount++;
+	}
+
+	if((board[2][0] == ' ' || board[2][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
+		winCount++;
+	}
+
+	return winCount;
+}

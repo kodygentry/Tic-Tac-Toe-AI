@@ -15,6 +15,22 @@ AI::AI(Node *root, bool order, int ply, char Mark){
   plyMAX = ply;
 }
 
+std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board){
+  Node r = Node(board);
+  root = &r;
+  GenerateChildren(0, turn, root); 
+  int bestMove = 0;
+  std::vector<std::vector<char>> bestPlay;
+  for(auto i : root->getChildren()){
+    int mo = ABMinimax(i, turn, 500, -500);
+    if(mo > bestMove){
+      bestMove = mo;
+      bestPlay = i->getBoard();
+    }
+  }
+  return bestPlay;
+}
+
 int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
   if(node -> getChildren().empty()){
     //return heuristic function

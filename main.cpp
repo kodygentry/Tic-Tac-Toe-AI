@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "ABMiniMax.h"
+#include "Node.h"
 #include <vector>
 
 
@@ -75,30 +76,16 @@ void initializeBoard(std::vector<std::vector<char>> board){
 }
 
 void startGame(int turn){
-  std::vector<std::vector<char>> board(GRID);
+  std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
 
-    initializeBoard(board);
     displayBoardLayout();
 
     while (endGame(board) == false && index != GRID * GRID){
-		int n;
+        int n;
 
-		/*
-        // AI player
-			// insert min max here
-			char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
-			row = n / GRID;
-			col = n % GRID;
-			board[row][col] = playerMove;
-			std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
-			displayBoard(board);
-			index++;
-			turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
-		*/
-
-		// HUMAN INPUT
-        std::cout<<"\n\nEnter move = ";
+        // HUMAN INPUT
+        std::cout << "\n\nEnter move = ";
         std::cin >> n;
         n--;
         row = n / GRID;
@@ -115,16 +102,16 @@ void startGame(int turn){
         } else if(n < 0 || n > 8){
             std::cout << "Invalid position\n";
         }
-	}
+    }
 
-	// draw
-	if (endGame(board) == false && index == GRID * GRID) {
-		std::cout << "Draw\n";
+    // draw
+    if (endGame(board) == false && index == GRID * GRID) {
+        std::cout << "Draw\n";
     } else {
         turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
 
-		declareWinner(turn);
-	}
+        declareWinner(turn);
+    }
 }
 
 bool endGame(std::vector<std::vector<char>> board){

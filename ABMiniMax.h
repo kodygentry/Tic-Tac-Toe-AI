@@ -11,6 +11,7 @@ class AI{
      void GenerateChildren(int, bool, Node *);
      // nodes will be of type char double array
      std::vector<std::vector<char>> mkMove();
+     std::vector<std::vector<char>> playMove(std::vector<std::vector<char>>);
      void setBoard(std::vector<std::vector<char>>);
   private:
      int ABMinimax(Node *, bool, int, int);

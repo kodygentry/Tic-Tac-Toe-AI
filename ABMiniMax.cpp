@@ -2,6 +2,7 @@
 #include "Node.h"
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 AI::AI(Node *root, bool order, int ply, char Mark){
   this->root = root;
@@ -21,6 +22,7 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   GenerateChildren(0, turn, root); 
   int bestMove = 0;
   std::vector<std::vector<char>> bestPlay;
+  /*
   for(auto i : root->getChildren()){
     int mo = ABMinimax(i, turn, 500, -500);
     if(mo > bestMove){
@@ -28,7 +30,8 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
       bestPlay = i->getBoard();
     }
   }
-  return bestPlay;
+  */
+  return root->getChildren().back()->getBoard();
 }
 
 int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
@@ -82,6 +85,7 @@ int AI::Heuristic4(){
 
 void AI::GenerateChildren(int ply, bool curTurn, Node *curNode){
   std::vector<std::vector<char>> b = curNode->getBoard();
+  std::cout << "Generating Children\n";
   for(int i = 0; i != b.size(); i++){
     for(int j = 0; j != b.size(); j++){
       std::vector<std::vector<char>> childB = b;
@@ -94,9 +98,8 @@ void AI::GenerateChildren(int ply, bool curTurn, Node *curNode){
           //set mark to opposing player
           childB[i][j] = oppMark;
         }
-        //create a child node with this new board and add the new child to the current nodes children
         curNode->addChild(childB);
-        //recurse and alternate moves
+        std::cout << "Recursing\n";
         GenerateChildren(ply++, !curTurn, curNode->getChildren().back());
       }
     }

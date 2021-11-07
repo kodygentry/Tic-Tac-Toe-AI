@@ -26,14 +26,13 @@ void declareWinner(int);
 // AI implementation
 
 int main(){
+    /*
     std::cout << "\n---------------------------------------------------------------\n"
               << "\n\t\t\tTic-Tac-Toe\n"
               << "\n---------------------------------------------------------------\n";
 
-    /*
         temp input loop
         later implement AI vs AI
-    */
     char cont = 'n'; // used for continuing game or not
     do {
         char choice; // used for deciding who goes first
@@ -49,6 +48,13 @@ int main(){
         std::cout << "Keep playing? (y/n) : ";
         std::cin >> cont;
     } while(cont == 'y');
+    */
+  std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
+  Node node = Node(board);
+  AI ai(&node, true, 9, 'X');
+  //ai.GenerateChildren(9, true, &node);
+  auto vec = ai.playMove(board);
+  std::cout << "Left playMove(), recursion not infinite thank god";
 }
 
 

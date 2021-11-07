@@ -46,6 +46,12 @@ int main(){
   std::cout << "Left playMove(), recursion not infinite thank god";*/
 }
 
+void header(){
+    std::cout << "\n---------------------------------------------------------------\n"
+            << "\n\t\t\tTic-Tac-Toe\n"
+            << "\n---------------------------------------------------------------\n";
+}
+
 void displayBoardLayout(){
     std::cout << "\t\t\t 1 | 2 | 3 " << std::endl
               << "\t\t\t-----------" << std::endl

@@ -87,6 +87,7 @@ void startGame(int turn){
 
 		/*
         // AI player
+		if (whoseTurn == PLAYER2){
 			// insert min max here
 			char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
 			row = n / GRID;
@@ -96,26 +97,47 @@ void startGame(int turn){
 			displayBoard(board);
 			index++;
 			turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+		}
 		*/
-
+		if (turn == PLAYER1){
+			std::cout<<"\n\nEnter move = ";
+			std::cin >> n;
+			n--;
+			row = n / GRID;
+			col = n % GRID;
+			if(board[row][col] == ' ' && n < 9 && n >= 0){
+				char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
+				board[row][col] = playerMove;
+				std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+				displayBoard(board);
+				index++;
+				turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+			} else if(board[row][col] != ' ' && n < 9 && n >= 0){
+				std::cout << "\nPosition is occupied\n\n";
+			} else if(n < 0 || n > 8){
+				std::cout << "Invalid position\n";
+			}
+		}
 		// HUMAN INPUT
-        std::cout<<"\n\nEnter move = ";
-        std::cin >> n;
-        n--;
-        row = n / GRID;
-        col = n % GRID;
-        if(board[row][col] == ' ' && n < 9 && n >= 0){
-            char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
-            board[row][col] = playerMove;
-            std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
-            displayBoard(board);
-            index++;
-            turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
-        } else if(board[row][col] != ' ' && n < 9 && n >= 0){
-            std::cout << "\nPosition is occupied\n\n";
-        } else if(n < 0 || n > 8){
-            std::cout << "Invalid position\n";
-        }
+		else if (turn == PLAYER2){
+			std::cout<<"\n\nEnter move = ";
+			std::cin >> n;
+			n--;
+			row = n / GRID;
+			col = n % GRID;
+			if(board[row][col] == ' ' && n < 9 && n >= 0){
+				char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
+				board[row][col] = playerMove;
+				std::cout << "\Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+				displayBoard(board);
+				index++;
+				turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
+			} else if(board[row][col] != ' ' && n < 9 && n >= 0){
+				std::cout << "\nPosition is occupied\n\n";
+			} else if(n < 0 || n > 8){
+				std::cout << "Invalid position\n";
+			}
+		}
 	}
 
 	// draw

@@ -26,13 +26,12 @@ void declareWinner(int);
 // AI implementation
 
 int main(){
-    /*
+
     std::cout << "\n---------------------------------------------------------------\n"
               << "\n\t\t\tTic-Tac-Toe\n"
               << "\n---------------------------------------------------------------\n";
 
-        temp input loop
-        later implement AI vs AI
+
     char cont = 'n'; // used for continuing game or not
     do {
         char choice; // used for deciding who goes first
@@ -48,15 +47,15 @@ int main(){
         std::cout << "Keep playing? (y/n) : ";
         std::cin >> cont;
     } while(cont == 'y');
-    */
-  std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
+
+  /*std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
   Node node = Node(board);
   AI ai(&node, true, 9, 'X');
   //ai.GenerateChildren(9, true, &node);
   auto vec = ai.playMove(board);
-  std::cout << "Left playMove(), recursion not infinite thank god";
+  //displayBoard(vec);
+  std::cout << "Left playMove(), recursion not infinite thank god";*/
 }
-
 
 void displayBoardLayout(){
     std::cout << "\t\t\t 1 | 2 | 3 " << std::endl
@@ -74,39 +73,37 @@ void displayBoard(std::vector<std::vector<char>> board){
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
 }
 
-void initializeBoard(std::vector<std::vector<char>> board){
-    for (int i = 0; i < GRID; i++){
-		for (int j = 0; j < GRID; j++)
-			board[i][j] = ' ';
-    }
-}
-
 void startGame(int turn){
   std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
 
     displayBoardLayout();
-
+    Node node = Node(board);
+    AI ai(&node, false, 9, 'O');
     while (endGame(board) == false && index != GRID * GRID){
-        int n;
+        if(turn == PLAYER1) {
+            int n;
 
-        // HUMAN INPUT
-        std::cout << "\n\nEnter move = ";
-        std::cin >> n;
-        n--;
-        row = n / GRID;
-        col = n % GRID;
-        if(board[row][col] == ' ' && n < 9 && n >= 0){
-            char playerMove = (turn == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
-            board[row][col] = playerMove;
-            std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
-            displayBoard(board);
-            index++;
-            turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
-        } else if(board[row][col] != ' ' && n < 9 && n >= 0){
-            std::cout << "\nPosition is occupied\n\n";
-        } else if(n < 0 || n > 8){
-            std::cout << "Invalid position\n";
+            std::cout << "\n\nEnter move = ";
+            std::cin >> n;
+            n--;
+            row = n / GRID;
+            col = n % GRID;
+            if(board[row][col] == ' ' && n < 9 && n >= 0){
+                char playerMove = PLAYER1MOVE;
+                board[row][col] = playerMove;
+                std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+                displayBoard(board);
+                index++;
+                turn = PLAYER2;
+            } else if(board[row][col] != ' ' && n < 9 && n >= 0){
+                std::cout << "\nPosition is occupied\n\n";
+            } else if(n < 0 || n > 8){
+                std::cout << "Invalid position\n";
+            }
+        } else {
+            board = ai.playMove(board);
+            turn = PLAYER1;
         }
     }
 

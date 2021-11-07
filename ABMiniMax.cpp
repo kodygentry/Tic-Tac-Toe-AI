@@ -1,8 +1,9 @@
-#include "ABMiniMax.h"
-#include "Node.h"
+#include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
-#include <iostream>
+#include "ABMiniMax.h"
+#include "Node.h"
 
 AI::AI(Node *root, bool order, int ply, char Mark){
   this->root = root;
@@ -19,24 +20,30 @@ AI::AI(Node *root, bool order, int ply, char Mark){
 std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board){
   Node r = Node(board);
   root = &r;
-  GenerateChildren(0, turn, root); 
-  int bestMove = 0;
+  GenerateChildren(0, mark, root);
+  /*for(auto i : root->getChildren()) {
+    int mo = ABMinimax(i, turn, 500, -500);
+    displayBoard(i->getBoard());
+    std::cout << mark << " " << mo << std::endl;
+  }*/
+  int bestMove = -500;
   std::vector<std::vector<char>> bestPlay;
-  /*
   for(auto i : root->getChildren()){
     int mo = ABMinimax(i, turn, 500, -500);
+    std::cout << mo << std::endl;
+    displayBoard(i->getBoard());
     if(mo > bestMove){
       bestMove = mo;
       bestPlay = i->getBoard();
     }
   }
-  */
-  return root->getChildren().back()->getBoard();
+
+  return bestPlay;
 }
 
 int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
   if(node -> getChildren().empty()){
-    //return heuristic function
+    return Heuristic1(node->getBoard(), maxPlayer);
   }
   if(maxPlayer){
     int bestVal = -500;
@@ -69,7 +76,6 @@ int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
 	return myPossibleWins - opponentPlayerWins;
 }
 
-
 int AI::Heuristic2(){
   return 0;
 }
@@ -83,27 +89,32 @@ int AI::Heuristic4(){
 }
 
 
-void AI::GenerateChildren(int ply, bool curTurn, Node *curNode){
+void AI::GenerateChildren(int ply, char playerMark, Node *curNode){
+  char oppMark = (playerMark == 'X') ? 'O' : 'X';
   std::vector<std::vector<char>> b = curNode->getBoard();
-  std::cout << "Generating Children\n";
   for(int i = 0; i != b.size(); i++){
     for(int j = 0; j != b.size(); j++){
       std::vector<std::vector<char>> childB = b;
       if(b[i][j] == ' '){
         //set the empty space to the players mark
-        if(curTurn){
-          //set space to players mark
-          childB[i][j] = mark;
-        }else{
-          //set mark to opposing player
-          childB[i][j] = oppMark;
-        }
+        childB[i][j] = playerMark;
+        //create a child node with this new board and add the new child to the current nodes children
         curNode->addChild(childB);
-        std::cout << "Recursing\n";
-        GenerateChildren(ply++, !curTurn, curNode->getChildren().back());
+        //recurse and alternate moves
+
+        GenerateChildren(ply++, oppMark, curNode->getChildren().back());
       }
     }
   }
+}
+
+void AI::displayBoard(std::vector<std::vector<char>> board){
+    std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
+              << "\t\t\t-----------" << std::endl
+              << "\t\t\t " << (board[1][0]) << " | " << (board[1][1]) << " | " << (board[1][2]) << std::endl
+              << "\t\t\t-----------" << std::endl
+              << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
+    std::cout << "\n" << std::endl;
 }
 
 std::vector<std::vector<char>> AI::mkMove(){

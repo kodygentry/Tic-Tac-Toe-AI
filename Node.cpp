@@ -6,8 +6,7 @@ Node::Node(std::vector<std::vector<char>> board){
 }
 
 void Node::addChild(std::vector<std::vector<char>> child){
-  Node son = Node(child);
-  Node *sonPtr = &son;
+  Node *sonPtr = new Node(child);
   children.push_back(sonPtr);
 }
 
@@ -20,7 +19,7 @@ Node* Node::getChild(int child){
 }
 
 std::vector<std::vector<char>> Node::getBoard(){
-  return board;
+  return this->board;
 }
 
 std::vector<Node *> Node::getChildren(){

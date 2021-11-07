@@ -11,27 +11,16 @@ const int GRID = 3; // value of size of board (ex. GRID 3 = 3x3. GRID 4 = 4x4)
 
 
 // inititalize
+void header();
 void displayBoardLayout();
 void displayBoard(std::vector<std::vector<char>> board);
-void initializeBoard(std::vector<std::vector<char>> board);
 
 // game logic
 void startGame(int);
-bool endGame(std::vector<std::vector<char>> board);
-bool checkRow(std::vector<std::vector<char>> board);
-bool checkCol(std::vector<std::vector<char>> board);
-bool checkDiag(std::vector<std::vector<char>> board);
-void declareWinner(int);
-
-// AI implementation
+bool winDetection(std::vector<std::vector<char>> board);
 
 int main(){
-
-    std::cout << "\n---------------------------------------------------------------\n"
-              << "\n\t\t\tTic-Tac-Toe\n"
-              << "\n---------------------------------------------------------------\n";
-
-
+	header();
     char cont = 'n'; // used for continuing game or not
     do {
         char choice; // used for deciding who goes first
@@ -80,7 +69,7 @@ void startGame(int turn){
     displayBoardLayout();
     Node node = Node(board);
     AI ai(&node, false, 9, 'O');
-    while (endGame(board) == false && index != GRID * GRID){
+    while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
             int n;
 
@@ -108,58 +97,37 @@ void startGame(int turn){
     }
 
     // draw
-    if (endGame(board) == false && index == GRID * GRID) {
+    if (winDetection(board) == false && index == GRID * GRID) {
         std::cout << "Draw\n";
     } else {
         turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
 
-        declareWinner(turn);
+        if (turn == PLAYER2)
+			std::cout<<"PLAYER2 has won\n";
+		else
+			std::cout<<"PLAYER1 has won\n";
     }
 }
 
-bool endGame(std::vector<std::vector<char>> board){
-    return (checkDiag(board) || checkCol(board) || checkRow(board));
-}
-
-bool checkRow(std::vector<std::vector<char>> board) {
-	for (int i = 0; i < GRID; i++) {
-		if (board[i][0] == board[i][1] &&
-			board[i][1] == board[i][2] &&
-			board[i][0] != ' ')
-			return (true);
-	}
+bool winDetection(std::vector<std::vector<char>> board){
+    	for (int i = 0; i < GRID; i++){ 
+		if (board[i][0] == board[i][1] && 
+			board[i][1] == board[i][2] && 
+			board[i][0] != ' ') 
+			return (true); 
+        else if (board[0][i] == board[1][i] && 
+			board[1][i] == board[2][i] && 
+			board[0][i] != ' ') 
+			return (true); 
+        else if (board[0][0] == board[1][1] && 
+            board[1][1] == board[2][2] && 
+            board[0][0] != ' ') 
+            return(true); 
+        else if (board[0][2] == board[1][1] && 
+            board[1][1] == board[2][0] && 
+            board[0][2] != ' ') 
+            return(true); 
+	} 
 	return(false);
 }
 
-bool checkCol(std::vector<std::vector<char>> board) {
-	for (int i = 0; i < GRID; i++) {
-		if (board[0][i] == board[1][i] &&
-			board[1][i] == board[2][i] &&
-			board[0][i] != ' ')
-			return (true);
-	}
-	return(false);
-}
-
-bool checkDiag(std::vector<std::vector<char>> board) {
-	if (board[0][0] == board[1][1] &&
-		board[1][1] == board[2][2] &&
-		board[0][0] != ' ')
-		return(true);
-
-	if (board[0][2] == board[1][1] &&
-		board[1][1] == board[2][0] &&
-		board[0][2] != ' ')
-		return(true);
-
-	return(false);
-}
-
-void declareWinner(int turn){
-	if (turn == PLAYER2)
-		std::cout<<"PLAYER2 has won\n";
-	else
-		std::cout<<"PLAYER1 has won\n";
-}
-
-// AI Functions

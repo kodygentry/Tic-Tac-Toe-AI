@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include "ABMiniMax.h"
+#include <vector>
 
 
 const int PLAYER1 = 1, PLAYER2 = 2;
@@ -9,21 +11,18 @@ const int GRID = 3; // value of size of board (ex. GRID 3 = 3x3. GRID 4 = 4x4)
 
 // inititalize
 void displayBoardLayout();
-void displayBoard(char board[][GRID]);
-void initializeBoard(char board[][GRID]);
+void displayBoard(std::vector<std::vector<char>> board);
+void initializeBoard(std::vector<std::vector<char>> board);
 
 // game logic
 void startGame(int);
-bool endGame(char board[][GRID]);
-bool checkRow(char board[][GRID]);
-bool checkCol(char board[][GRID]);
-bool checkDiag(char board[][GRID]);
+bool endGame(std::vector<std::vector<char>> board);
+bool checkRow(std::vector<std::vector<char>> board);
+bool checkCol(std::vector<std::vector<char>> board);
+bool checkDiag(std::vector<std::vector<char>> board);
 void declareWinner(int);
 
 // AI implementation
-int heuristicOne(char board[][GRID], int currentPlayer);
-int findPossibleWins(char board[][GRID], int currentPlayer);
-
 
 int main(){
     std::cout << "\n---------------------------------------------------------------\n"
@@ -60,7 +59,7 @@ void displayBoardLayout(){
               << "\t\t\t 7 | 8 | 9 \n" << std::endl;
 }
 
-void displayBoard(char board[][GRID]){
+void displayBoard(std::vector<std::vector<char>> board){
     std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
               << "\t\t\t-----------" << std::endl
               << "\t\t\t " << (board[1][0]) << " | " << (board[1][1]) << " | " << (board[1][2]) << std::endl
@@ -68,7 +67,7 @@ void displayBoard(char board[][GRID]){
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
 }
 
-void initializeBoard(char board[][GRID]){
+void initializeBoard(std::vector<std::vector<char>> board){
     for (int i = 0; i < GRID; i++){
 		for (int j = 0; j < GRID; j++)
 			board[i][j] = ' ';
@@ -76,7 +75,7 @@ void initializeBoard(char board[][GRID]){
 }
 
 void startGame(int turn){
-    char board[GRID][GRID];
+  std::vector<std::vector<char>> board(GRID);
     int index = 0, row = 0, col = 0; // for depth index
 
     initializeBoard(board);
@@ -150,11 +149,11 @@ void startGame(int turn){
 	}
 }
 
-bool endGame(char board[][GRID]){
+bool endGame(std::vector<std::vector<char>> board){
     return (checkDiag(board) || checkCol(board) || checkRow(board));
 }
 
-bool checkRow(char board[][GRID]) {
+bool checkRow(std::vector<std::vector<char>> board) {
 	for (int i = 0; i < GRID; i++) {
 		if (board[i][0] == board[i][1] &&
 			board[i][1] == board[i][2] &&
@@ -164,7 +163,7 @@ bool checkRow(char board[][GRID]) {
 	return(false);
 }
 
-bool checkCol(char board[][GRID]) {
+bool checkCol(std::vector<std::vector<char>> board) {
 	for (int i = 0; i < GRID; i++) {
 		if (board[0][i] == board[1][i] &&
 			board[1][i] == board[2][i] &&
@@ -174,7 +173,7 @@ bool checkCol(char board[][GRID]) {
 	return(false);
 }
 
-bool checkDiag(char board[][GRID]) {
+bool checkDiag(std::vector<std::vector<char>> board) {
 	if (board[0][0] == board[1][1] &&
 		board[1][1] == board[2][2] &&
 		board[0][0] != ' ')
@@ -196,57 +195,3 @@ void declareWinner(int turn){
 }
 
 // AI Functions
-int heuristicOne(char board[][GRID], int currentPlayer) {
-	int oppositePlayer = (currentPlayer == PLAYER1) ? PLAYER2 : PLAYER1;
-	int myPossibleWins = findPossibleWins(board, currentPlayer);
-	int opponentPlayerWins = findPossibleWins(board, oppositePlayer);
-	return myPossibleWins - opponentPlayerWins;
-}
-
-int findPossibleWins(char board[][GRID], int currentPlayer) {
-	char myPlayerMove = (currentPlayer == PLAYER1) ? PLAYER1MOVE : PLAYER2MOVE;
-	int winCount = 0;
-
-	// Check # of horizontal possible wins
-	for(int x = 0; x < 3; x++) {
-		int horizontalCount = 0;
-		for(int y = 0; y < 3; y++) {
-			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
-				horizontalCount++;
-			}
-		}
-
-		if(horizontalCount == 3) {
-			winCount++;
-		}
-	}
-
-	// Check # of vertical possible wins
-	for(int y = 0; y < 3; y++) {
-		int verticalCount = 0;
-		for(int x = 0; x < 3; x++) {
-			if(board[x][y] == ' ' || board[x][y] == myPlayerMove) {
-				verticalCount++;
-			}
-		}
-
-		if(verticalCount == 3) {
-			winCount++;
-		}
-	}
-
-	// Check # of diagonal possible wins
-	if((board[0][0] == ' ' || board[0][0] == myPlayerMove)
-		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
-		&& (board[2][2] == ' ' || board[2][2] == myPlayerMove)) {
-		winCount++;
-	}
-
-	if((board[2][0] == ' ' || board[2][0] == myPlayerMove)
-		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
-		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
-		winCount++;
-	}
-
-	return winCount;
-}

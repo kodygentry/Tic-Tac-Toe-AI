@@ -17,16 +17,16 @@ AI::AI(Node *root, bool order, int ply, char Mark){
   plyMAX = ply;
 }
 
-std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board){
+std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board, int movesTaken){
   Node r = Node(board);
   root = &r;
-  GenerateChildren(0, mark, root);
-  int bestMove = -500;
+  GenerateChildren(mark, root);
+  int bestMove = -50000;
   std::vector<std::vector<char>> bestPlay;
   for(auto i : root->getChildren()){
-    int mo = ABMinimax2(i, turn, 500, -500);
-    std::cout << mo << std::endl;
-    displayBoard(i->getBoard());
+    int mo = ABMinimax2(i, 0, turn, 50000, -50000);
+    //std::cout << mo << std::endl;
+    //displayBoard(i->getBoard());
     if(mo > bestMove){
       bestMove = mo;
       bestPlay = i->getBoard();
@@ -36,22 +36,36 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   return bestPlay;
 }
 
-int AI::ABMinimax2(Node *node, bool maxPlayer, int ut, int pt){
-    if(node->getChildren().empty()){
-        std::cout << "empty" << std::endl;
-        return Heuristic1(node->getBoard(), maxPlayer);
+int AI::ABMinimax2(Node *node, int depth, bool maxPlayer, int ut, int pt){
+    if(depth != 2) {
+        char mark = (maxPlayer) ? 'X' : 'O';
+        GenerateChildren(mark, node);
+
+        for(auto i : node->getChildren()){
+            //displayBoard(i->getBoard());
+            int value = ABMinimax2(i, depth + 1, !maxPlayer, -pt, -ut);
+            int newValue = -value;
+            if(newValue > pt) {
+                pt = newValue;
+            }
+            if(pt < ut)
+                break;
+            else
+                return pt;
+        }
+    } else {
+        int value = Heuristic1(node->getBoard(), maxPlayer);
+        if(!maxPlayer)
+            return -value;
+        return value;
     }
 
-    for(auto i : node->getChildren()){
-        displayBoard(i->getBoard());
-        int value = ABMinimax2(i, !maxPlayer, -pt, -ut);
-        int newValue = -value;
-        if(newValue > pt) {
-            pt = newValue;
-        }
-        if(pt < ut)
-            break;
-    }
+   /* if(node->getChildren().empty()){
+        //std::cout << "empty" << std::endl;
+        return Heuristic1(node->getBoard(), maxPlayer);
+    }*/
+
+
     return pt;
 }
 
@@ -103,7 +117,7 @@ int AI::Heuristic4(){
 }
 
 
-void AI::GenerateChildren(int ply, char playerMark, Node *curNode){
+void AI::GenerateChildren(char playerMark, Node *curNode){
   char oppMark = (playerMark == 'X') ? 'O' : 'X';
   std::vector<std::vector<char>> b = curNode->getBoard();
   //std::cout << "ply: " << ply << std::endl;

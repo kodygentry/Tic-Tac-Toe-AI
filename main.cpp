@@ -36,14 +36,6 @@ int main(){
         std::cout << "Keep playing? (y/n) : ";
         std::cin >> cont;
     } while(cont == 'y');
-
-  /*std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
-  Node node = Node(board);
-  AI ai(&node, true, 9, 'X');
-  //ai.GenerateChildren(9, true, &node);
-  auto vec = ai.playMove(board);
-  //displayBoard(vec);
-  std::cout << "Left playMove(), recursion not infinite thank god";*/
 }
 
 void header(){
@@ -71,7 +63,6 @@ void displayBoard(std::vector<std::vector<char>> board){
 void startGame(int turn){
   std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
-
     displayBoardLayout();
     Node node = Node(board);
     AI ai(&node, false, 9, 'O');
@@ -89,7 +80,6 @@ void startGame(int turn){
                 board[row][col] = playerMove;
                 std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
                 displayBoard(board);
-                index++;
                 turn = PLAYER2;
             } else if(board[row][col] != ' ' && n < 9 && n >= 0){
                 std::cout << "\nPosition is occupied\n\n";
@@ -97,9 +87,12 @@ void startGame(int turn){
                 std::cout << "Invalid position\n";
             }
         } else {
-            board = ai.playMove(board);
+            board = ai.playMove(board, index);
+            std::cout << "O's move" << std::endl;
+            displayBoard(board);
             turn = PLAYER1;
         }
+        index++;
     }
 
     // draw

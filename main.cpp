@@ -21,7 +21,8 @@ bool winDetection(std::vector<std::vector<char>> board);
 
 int main(){
 	header();
-    char cont = 'n'; // used for continuing game or not
+	startGame(PLAYER1);
+    /*char cont = 'n'; // used for continuing game or not
     do {
         char choice; // used for deciding who goes first
         std::cout << "Do you want to start first? (y/n) : ";
@@ -35,7 +36,7 @@ int main(){
 
         std::cout << "Keep playing? (y/n) : ";
         std::cin >> cont;
-    } while(cont == 'y');
+    } while(cont == 'y');*/
 }
 
 void header(){

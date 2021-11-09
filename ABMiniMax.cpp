@@ -24,7 +24,7 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   int bestMove = -50000;
   std::vector<std::vector<char>> bestPlay;
   for(auto i : root->getChildren()){
-    int mo = ABMinimax2(i, 0, turn, 50000, -50000);
+    int mo = ABMinimax(i, 0, turn, 50000, -50000);
     //std::cout << mo << std::endl;
     //displayBoard(i->getBoard());
     if(mo > bestMove){
@@ -36,14 +36,13 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   return bestPlay;
 }
 
-int AI::ABMinimax2(Node *node, int depth, bool maxPlayer, int ut, int pt){
+int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
     if(depth != 2) {
         char mark = (maxPlayer) ? 'X' : 'O';
         GenerateChildren(mark, node);
 
         for(auto i : node->getChildren()){
-            //displayBoard(i->getBoard());
-            int value = ABMinimax2(i, depth + 1, !maxPlayer, -pt, -ut);
+            int value = ABMinimax(i, depth + 1, !maxPlayer, -pt, -ut);
             int newValue = -value;
             if(newValue > pt) {
                 pt = newValue;
@@ -67,35 +66,6 @@ int AI::ABMinimax2(Node *node, int depth, bool maxPlayer, int ut, int pt){
 
 
     return pt;
-}
-
-int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
-  if(node -> getChildren().empty()){
-    return Heuristic1(node->getBoard(), maxPlayer);
-  }
-  if(maxPlayer){
-    int bestVal = -500;
-    for(auto i : node->getChildren()){
-      int value = ABMinimax(i, false, a, b);
-      bestVal = std::max(bestVal, value);
-      a = std::max(alpha, bestVal);
-      if(b <= a){
-        break;
-      }
-    }
-    return bestVal;
-  }else{
-    int bestVal = 500;
-    for(auto i : node->getChildren()){
-      int value = ABMinimax(i, true, a, b);
-      bestVal = std::min(bestVal, value);
-      b = std::min(b, bestVal);
-      if(b <= a){
-        break;
-      }
-    }
-    return bestVal;
-  }
 }
 
 int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
@@ -146,11 +116,6 @@ void AI::displayBoard(std::vector<std::vector<char>> board){
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
     std::cout << "\n" << std::endl;
 }
-
-std::vector<std::vector<char>> AI::mkMove(){
-  return root->getBoard();
-}
-
 
 
 void AI::setBoard(std::vector<std::vector<char>> board){

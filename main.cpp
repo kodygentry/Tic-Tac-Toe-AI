@@ -21,6 +21,25 @@ bool winDetection(std::vector<std::vector<char>> board);
 
 int main(){
 	header();
+	/*std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
+    board[0][0] = 'X';
+    board[0][1] = 'O';
+    board[0][2] = 'X';
+
+    board[1][0] = 'O';
+    board[1][1] = 'X';
+    board[1][2] = 'O';
+
+    board[2][0] = 'O';
+    board[2][1] = 'X';
+    board[2][2] = ' ';
+
+    Node node = Node(board);
+    AI aiMax(&node, true, 9, 'X');
+    board = aiMax.playMove(board, 8);
+    displayBoard(board);
+    //aiMax.GenerateChildren('X', &node);*/
+
 	startGame(PLAYER1);
     /*char cont = 'n'; // used for continuing game or not
     do {
@@ -62,16 +81,19 @@ void displayBoard(std::vector<std::vector<char>> board){
 }
 
 void startGame(int turn){
-  std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
+    std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
     displayBoardLayout();
     Node node = Node(board);
-    AI aiMax(&node, false, 9, 'X');
+    AI aiMax(&node, true, 9, 'X');
     AI aiMin(&node, false, 9, 'O');
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
             board = aiMax.playMove(board, index);
+            if(board.empty()) {
+                std::cout <<"board is empty\n";
+            }
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             turn = PLAYER2;

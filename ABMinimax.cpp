@@ -21,15 +21,10 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   Node r = Node(board);
   root = &r;
   GenerateChildren(0, mark, root);
-  /*for(auto i : root->getChildren()) {
-    int mo = ABMinimax(i, turn, 500, -500);
-    displayBoard(i->getBoard());
-    std::cout << mark << " " << mo << std::endl;
-  }*/
   int bestMove = -500;
   std::vector<std::vector<char>> bestPlay;
   for(auto i : root->getChildren()){
-    int mo = ABMinimax(i, turn, 500, -500);
+    int mo = ABMinimax2(i, turn, 500, -500);
     std::cout << mo << std::endl;
     displayBoard(i->getBoard());
     if(mo > bestMove){
@@ -39,6 +34,25 @@ std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board
   }
 
   return bestPlay;
+}
+
+int AI::ABMinimax2(Node *node, bool maxPlayer, int ut, int pt){
+    if(node->getChildren().empty()){
+        std::cout << "empty" << std::endl;
+        return Heuristic1(node->getBoard(), maxPlayer);
+    }
+
+    for(auto i : node->getChildren()){
+        displayBoard(i->getBoard());
+        int value = ABMinimax2(i, !maxPlayer, -pt, -ut);
+        int newValue = -value;
+        if(newValue > pt) {
+            pt = newValue;
+        }
+        if(pt < ut)
+            break;
+    }
+    return pt;
 }
 
 int AI::ABMinimax(Node *node, bool maxPlayer, int a, int b){
@@ -92,6 +106,9 @@ int AI::Heuristic4(){
 void AI::GenerateChildren(int ply, char playerMark, Node *curNode){
   char oppMark = (playerMark == 'X') ? 'O' : 'X';
   std::vector<std::vector<char>> b = curNode->getBoard();
+  //std::cout << "ply: " << ply << std::endl;
+  //displayBoard(b);
+
   for(int i = 0; i != b.size(); i++){
     for(int j = 0; j != b.size(); j++){
       std::vector<std::vector<char>> childB = b;
@@ -100,9 +117,8 @@ void AI::GenerateChildren(int ply, char playerMark, Node *curNode){
         childB[i][j] = playerMark;
         //create a child node with this new board and add the new child to the current nodes children
         curNode->addChild(childB);
-        //recurse and alternate moves
 
-        GenerateChildren(ply++, oppMark, curNode->getChildren().back());
+        //GenerateChildren(++ply, oppMark, curNode->getChildren().back());
       }
     }
   }
@@ -121,6 +137,8 @@ std::vector<std::vector<char>> AI::mkMove(){
   return root->getBoard();
 }
 
+
+
 void AI::setBoard(std::vector<std::vector<char>> board){
   Node nRoot = Node(board);
   this->root = &nRoot;
@@ -129,6 +147,9 @@ void AI::setBoard(std::vector<std::vector<char>> board){
 int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
 	char myPlayerMove = (currentPlayer) ? mark : oppMark;
 	int winCount = 0;
+
+    //std::cout << myPlayerMove << std::endl;
+    //displayBoard(board);
 
 	// Check # of horizontal possible wins
 	for(int x = 0; x < 3; x++) {

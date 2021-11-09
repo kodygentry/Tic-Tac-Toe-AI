@@ -16,6 +16,7 @@ class AI{
      void displayBoard(std::vector<std::vector<char>>);
   private:
      int ABMinimax(Node *, bool, int, int);
+     int ABMinimax2(Node *, bool, int, int);
      // ai has Heuristic evaluation functions
      int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2();

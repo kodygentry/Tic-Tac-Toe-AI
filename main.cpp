@@ -21,41 +21,7 @@ bool winDetection(std::vector<std::vector<char>> board);
 
 int main(){
 	header();
-	/*std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
-    board[0][0] = 'X';
-    board[0][1] = 'O';
-    board[0][2] = 'X';
-
-    board[1][0] = 'O';
-    board[1][1] = 'X';
-    board[1][2] = 'O';
-
-    board[2][0] = 'O';
-    board[2][1] = 'X';
-    board[2][2] = ' ';
-
-    Node node = Node(board);
-    AI aiMax(&node, true, 9, 'X');
-    board = aiMax.playMove(board, 8);
-    displayBoard(board);
-    //aiMax.GenerateChildren('X', &node);*/
-
 	startGame(PLAYER1);
-    /*char cont = 'n'; // used for continuing game or not
-    do {
-        char choice; // used for deciding who goes first
-        std::cout << "Do you want to start first? (y/n) : ";
-	 	std::cin >> choice;
-        if(choice == 'n' || choice == 'N')
-            startGame(PLAYER2);
-        else if(choice == 'y' || choice == 'Y')
-            startGame(PLAYER1);
-        else
-            std::cout << "Invalid input..." << std::endl;
-
-        std::cout << "Keep playing? (y/n) : ";
-        std::cin >> cont;
-    } while(cont == 'y');*/
 }
 
 void header(){
@@ -85,8 +51,8 @@ void startGame(int turn){
     int index = 0, row = 0, col = 0; // for depth index
     displayBoardLayout();
     Node node = Node(board);
-    AI aiMax(&node, true, 9, 'X');
-    AI aiMin(&node, false, 9, 'O');
+    AI aiMax(&node, true, 9, 'X', 1);
+    AI aiMin(&node, false, 9, 'O', 2);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
@@ -138,15 +104,15 @@ void startGame(int turn){
 }
 
 bool winDetection(std::vector<std::vector<char>> board){
-    	for (int i = 0; i < GRID; i++){
-		if (board[i][0] == board[i][1] &&
-			board[i][1] == board[i][2] &&
-			board[i][0] != ' ')
-			return (true);
+    for (int i = 0; i < GRID; i++){
+        if (board[i][0] == board[i][1] &&
+            board[i][1] == board[i][2] &&
+            board[i][0] != ' ')
+            return (true);
         else if (board[0][i] == board[1][i] &&
-			board[1][i] == board[2][i] &&
-			board[0][i] != ' ')
-			return (true);
+            board[1][i] == board[2][i] &&
+            board[0][i] != ' ')
+            return (true);
         else if (board[0][0] == board[1][1] &&
             board[1][1] == board[2][2] &&
             board[0][0] != ' ')

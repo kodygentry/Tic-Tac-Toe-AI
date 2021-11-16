@@ -5,7 +5,7 @@
 #include "ABMiniMax.h"
 #include "Node.h"
 
-AI::AI(Node *root, bool order, int ply, char Mark){
+AI::AI(Node *root, bool order, int ply, char Mark, int heuristicId){
   this->root = root;
   turn = (order) ? true : false;
   mark = Mark;
@@ -15,6 +15,7 @@ AI::AI(Node *root, bool order, int ply, char Mark){
     oppMark = 'X';
   }
   plyMAX = ply;
+  algorithId = heuristicId;
 }
 
 std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board, int movesTaken){
@@ -48,7 +49,7 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
         return Heuristic1(node->getBoard(), maxPlayer);
     }*/
 
-    if(depth != 2) {
+    if(DeepEnough(node->getBoard(), depth, maxPlayer)) {
         char mark = (maxPlayer) ? 'X' : 'O';
         //std::cout << "call ab\n";
         GenerateChildren(mark, node);
@@ -65,7 +66,12 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
                 return pt;
         }
     } else {
-        int value = Heuristic1(node->getBoard(), maxPlayer);
+        int value;
+        if(algorithId == 1)
+            value = Heuristic1(node->getBoard(), maxPlayer);
+        else if(algorithId == 2)
+            value = Heuristic2(node->getBoard(), maxPlayer);
+
         if(!maxPlayer)
             return -value;
         return value;
@@ -74,14 +80,62 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
     return pt;
 }
 
+bool AI::DeepEnough(std::vector<std::vector<char>> board, int currentDepth, bool currentPlayer) {
+    bool myPlayerWin = winDetection(board, currentPlayer);
+    bool oppPlayerWin = winDetection(board, !currentPlayer);
+    if(myPlayerWin || oppPlayerWin)
+        return true;
+
+    if(currentDepth == 2) {
+        return true;
+    } else {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(board[i][j] == ' ') {
+                    return false;
+                }
+            }
+        }
+    }
+
+
+    return true;
+}
+
 int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
 	int myPossibleWins = findPossibleWins(board, currentPlayer);
 	int opponentPlayerWins = findPossibleWins(board, !currentPlayer);
 	return myPossibleWins - opponentPlayerWins;
 }
 
-int AI::Heuristic2(){
-  return 0;
+int AI::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
+    char myPlayerMove = (currentPlayer) ? mark : oppMark;
+    char opponentMark = (currentPlayer) ? oppMark : mark;
+
+    for (int i = 0; i < 3; i++){
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+            if(board[i][0] == myPlayerMove)
+                return 1;
+            else if(board[i][0] == opponentMark)
+                return -1;
+        } else if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
+            if(board[0][i] == myPlayerMove)
+                return 1;
+            else if(board[0][i] == opponentMark)
+                return -1;
+        } else if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            if(board[0][0] == myPlayerMove)
+                return 1;
+            else if(board[0][0] == opponentMark)
+                return -1;
+        } else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            if(board[0][2] == myPlayerMove)
+                return 1;
+            else if(board[0][2] == opponentMark)
+                return -1;
+        }
+	}
+    return 0;
 }
 
 int AI::Heuristic3(){
@@ -178,4 +232,21 @@ int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlaye
 	}
 
 	return winCount;
+}
+
+bool AI::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){
+    char myPlayerMove = (currentPlayer) ? mark : oppMark;
+
+    for (int i = 0; i < 3; i++){
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] == myPlayerMove) {
+            return true;
+        } else if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] == myPlayerMove) {
+            return true;
+        } else if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == myPlayerMove) {
+            return true;
+        } else if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] == myPlayerMove) {
+            return true;
+        }
+	}
+	return (false);
 }

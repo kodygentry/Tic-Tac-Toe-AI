@@ -19,9 +19,10 @@ class AI{
      int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2(std::vector<std::vector<char>>, bool);
      int Heuristic3();
-     int Heuristic4();
+     int Heuristic4(std::vector<std::vector<char>>, bool);
      bool DeepEnough(std::vector<std::vector<char>>, int, bool);
      int findPossibleWins(std::vector<std::vector<char>>, bool);
+     int openLengths(std::vector<std::vector<char>>, bool);
      bool winDetection(std::vector<std::vector<char>>, bool);
      int algorithId;
      Node *root;

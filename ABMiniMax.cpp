@@ -72,6 +72,10 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
         else if(algorithId == 2)
             value = Heuristic2(node->getBoard(), maxPlayer);
 
+
+        else if(algorithId == 4)
+            value = Heuristic4(node->getBoard(), maxPlayer);
+
         if(!maxPlayer)
             return -value;
         return value;
@@ -142,10 +146,14 @@ int AI::Heuristic3(){
   return 0;
 }
 
-int AI::Heuristic4(){
-  return 0;
+int AI::Heuristic4(std::vector<std::vector<char>> board, bool currentPlayer){
+  // eval functions that returns if currentPlayer position is good/bad based on open board lengths
+  // priority is open lengths and middle position after lengths checked
+  int myOpen = openLengths(board, currentPlayer);
+  int opOpen = openLengths(board, currentPlayer);
+  return myOpen - opOpen;
+  // resource - Charles R. Dyer, U of Wisconsin-Madison - https://www.csee.umbc.edu/courses/undergraduate/471/spring19/01/notes/07_games/07a.pdf
 }
-
 
 void AI::GenerateChildren(char playerMark, Node *curNode){
   char oppMark = (playerMark == 'X') ? 'O' : 'X';
@@ -176,7 +184,6 @@ void AI::displayBoard(std::vector<std::vector<char>> board){
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
     std::cout << "\n" << std::endl;
 }
-
 
 void AI::setBoard(std::vector<std::vector<char>> board){
   Node nRoot = Node(board);
@@ -232,6 +239,37 @@ int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlaye
 	}
 
 	return winCount;
+}
+
+int AI::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
+  char playerMark = (currentPlayer) ? mark : oppMark;
+  char oppMark = (currentPlayer) ? oppMark : mark;
+
+  for(int i = 0; i < 3; i++){
+    // check rows
+    if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] == ' ') return 10;              // check if length is clear, return good pos
+    else if (board[i][0] == playerMark || board[i][1] == playerMark || board[i][2] == playerMark) return 10;   // if not, check if my player is on length, return good pos
+    else if (board[i][0] == oppMark || board[i][1] == oppMark || board[i][2] == oppMark) return -10;          // if not, check if opp player is on length, return bad poss
+
+    // check columns
+    if (board[0][i] == board[1][i] || board[1][i] == board[2][i] || board[0][i] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[0][i] == playerMark || board[1][i] == playerMark || board[2][i] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[i][0] == oppMark || board[i][1] == oppMark || board[i][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+
+    // check diagnals
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[0][0] == playerMark || board[1][1] == playerMark || board[2][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[0][0] == oppMark || board[1][1] == oppMark || board[2][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+
+    if (board[2][0] == board[1][1] && board[1][1] == board[0][2] && board[2][0] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[2][0] == playerMark || board[1][1] == playerMark || board[0][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[2][0] == oppMark || board[1][1] == oppMark || board[0][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+    
+
+    // middle priority check after lengths (applies only for first move)
+    if(board[1][1] == ' ' || board[1][1] == playerMark) return 10;
+    else if (board[1][1] == oppMark) return -10;
+  }
 }
 
 bool AI::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){

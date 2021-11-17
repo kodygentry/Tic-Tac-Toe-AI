@@ -71,6 +71,8 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
             value = Heuristic1(node->getBoard(), maxPlayer);
         else if(algorithId == 2)
             value = Heuristic2(node->getBoard(), maxPlayer);
+        else if(algorithId == 3)
+            value = Heuristic3(node, maxPlayer);
 
         if(!maxPlayer)
             return -value;
@@ -138,8 +140,10 @@ int AI::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
     return 0;
 }
 
-int AI::Heuristic3(){
-  return 0;
+int AI::Heuristic3(Node *node, bool currPlayer){
+  int myPWins = findMagicWins(node, currPlayer);
+  int oPWins = findMagicWins(node, !currPlayer);
+  return myPWins - oPWins;
 }
 
 int AI::Heuristic4(){
@@ -232,6 +236,60 @@ int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlaye
 	}
 
 	return winCount;
+}
+
+int AI::findMagicWins(Node *node, bool currPlayer){
+  std::vector<std::vector<int>> magicSquare = {{8, 3, 4}, {1,5,9}, {6,7,2}};
+  int possibleWins = 0;
+  std::vector<int> ownPositions;
+  std::vector<int> neutralPositions;
+  std::vector<int> oppPositions;
+  std::vector<std::vector<char>> curBoard = node->getBoard();
+  char playerMark = (currPlayer) ? mark : oppMark;
+  char oppMark = (currPlayer) ? oppMark : mark;
+  //find the positions we own, add their magic number to the list
+  for(int i = 0; i != 3; i++){
+    for(int j = 0; j != 3; j++){
+      if(curBoard[i][j] == playerMark){
+        ownPositions.push_back(magicSquare[i][j]);
+      }else if(curBoard[i][j] == oppMark){
+        oppPositions.push_back(magicSquare[i][j]);
+      }else{
+        neutralPositions.push_back(magicSquare[i][j]);
+      }
+    }
+  }
+  //calculate the positions for a possible win given the positions I own
+  std::vector<int> explored;
+  for(int i = 0; i != ownPositions.size(); i++){
+    for(int j = i+1; j != ownPositions.size(); j++){
+      int check = 15 - ownPositions[i] - ownPositions[j];
+      //check if the numbers are collinear
+      if(check > 0 && check <= 9){
+        //check if the number is owned by the oppent
+        if(std::find(oppPositions.begin(), oppPositions.end(), check) == oppPositions.end()){
+          possibleWins++;
+          explored.push_back(check);
+        }
+      }
+    }
+  }
+
+  //check the positions owned by neither player
+  for(int i = 0; i != neutralPositions.size(); i++){
+    for(int j = i + 1; j != neutralPositions.size(); j++){
+      int check = 15 - neutralPositions[i] - neutralPositions[j];
+      if(check > 0 && check <= 9){
+        if(std::find(oppPositions.begin(), oppPositions.end(), check) == oppPositions.end()){
+          possibleWins--;
+        }else if(std::find(explored.begin(), explored.end(), check) == explored.end()){
+          explored.push_back(check);
+          possibleWins++;
+        }
+      }
+    }
+  }
+  return possibleWins;
 }
 
 bool AI::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){

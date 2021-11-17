@@ -1,6 +1,7 @@
 #ifndef ABMINIMAX
 #define ABMINIMAX
 #include "Node.h"
+#include <algorithm>
 
 class AI{
    // ai has a tree of nodes
@@ -18,11 +19,12 @@ class AI{
      // ai has Heuristic evaluation functions
      int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2(std::vector<std::vector<char>>, bool);
-     int Heuristic3();
+     int Heuristic3(Node *, bool);
      int Heuristic4();
      bool DeepEnough(std::vector<std::vector<char>>, int, bool);
      int findPossibleWins(std::vector<std::vector<char>>, bool);
      bool winDetection(std::vector<std::vector<char>>, bool);
+     int findMagicWins(Node *, bool);
      int algorithId;
      Node *root;
      bool turn;

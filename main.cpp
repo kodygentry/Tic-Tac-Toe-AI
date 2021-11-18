@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "ABMiniMax.h"
+#include "AB2.h"
 #include "Node.h"
 #include <vector>
 
@@ -49,38 +50,17 @@ void displayBoard(std::vector<std::vector<char>> board){
 void startGame(int turn){
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
-    displayBoardLayout();
+    //displayBoardLayout();
     Node node = Node(board);
-    AI aiMax(&node, true, 9, 'X', 1);
-    AI aiMin(&node, false, 9, 'O', 2);
+    AI2 aiMax(&node, true, 'X', 1);
+    AI2 aiMin(&node, false, 'O', 1);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
             board = aiMax.playMove(board, index);
-            if(board.empty()) {
-                std::cout <<"board is empty\n";
-            }
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             turn = PLAYER2;
-            /*int n;
-
-            std::cout << "\n\nEnter move = ";
-            std::cin >> n;
-            n--;
-            row = n / GRID;
-            col = n % GRID;
-            if(board[row][col] == ' ' && n < 9 && n >= 0){
-                char playerMove = PLAYER1MOVE;
-                board[row][col] = playerMove;
-                std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
-                displayBoard(board);
-                turn = PLAYER2;
-            } else if(board[row][col] != ' ' && n < 9 && n >= 0){
-                std::cout << "\nPosition is occupied\n\n";
-            } else if(n < 0 || n > 8){
-                std::cout << "Invalid position\n";
-            }*/
         } else {
             board = aiMin.playMove(board, index);
             std::cout << "O's move" << std::endl;

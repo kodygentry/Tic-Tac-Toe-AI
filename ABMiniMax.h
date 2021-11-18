@@ -31,6 +31,7 @@ class AI{
      int plyMAX, alpha, beta;
      char mark;
      char oppMark;
+     void printBoard(Node *);
 };
 
 #endif

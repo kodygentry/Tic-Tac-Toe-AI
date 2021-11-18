@@ -19,16 +19,17 @@ AI::AI(Node *root, bool order, int ply, char Mark, int heuristicId){
 }
 
 std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board, int movesTaken){
+  std::vector<std::vector<char>> test = {{'O', ' ', 'X'}, {'O', ' ', 'X'}, {' ', ' ', ' '}};
   Node r = Node(board);
+  Node t = Node(test);
   root = &r;
-  GenerateChildren(mark, root);
+  Node *te = &t;
   int bestMove = -50000;
+  GenerateChildren(mark, root);
   std::vector<std::vector<char>> bestPlay;
 
   for(auto i : root->getChildren()){
-    int mo = ABMinimax(i, 0, turn, 50000, -50000);
-    //std::cout << mo << std::endl;
-    //displayBoard(i->getBoard());
+    int mo = ABMinimax(i, 0, !turn, bestMove, -bestMove);
     if(mo > bestMove){
       bestMove = mo;
       bestPlay = i->getBoard();
@@ -51,7 +52,7 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
 
     if(DeepEnough(node->getBoard(), depth, maxPlayer)) {
         char mark = (maxPlayer) ? 'X' : 'O';
-        //std::cout << "call ab\n";
+
         GenerateChildren(mark, node);
 
         for(auto i : node->getChildren()){
@@ -60,10 +61,10 @@ int AI::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt){
             if(newValue > pt) {
                 pt = newValue;
             }
-            if(pt < ut)
-                break;
-            else
+            if(pt >= ut)
                 return pt;
+            else
+                break;
         }
     } else {
         int value;
@@ -88,20 +89,22 @@ bool AI::DeepEnough(std::vector<std::vector<char>> board, int currentDepth, bool
     if(myPlayerWin || oppPlayerWin)
         return true;
 
-    if(currentDepth == 2) {
+    if(currentDepth == 5) {
         return true;
     } else {
+      int cntFreeSpaces = 0;
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 if(board[i][j] == ' ') {
-                    return false;
+                  cntFreeSpaces++;
                 }
             }
         }
+        if(cntFreeSpaces == 1 && !myPlayerWin && !oppPlayerWin){
+          return true;
+        }
     }
-
-
-    return true;
+    return false;
 }
 
 int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
@@ -234,7 +237,6 @@ int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlaye
 		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
 		winCount++;
 	}
-
 	return winCount;
 }
 
@@ -268,6 +270,9 @@ int AI::findMagicWins(Node *node, bool currPlayer){
       if(check > 0 && check <= 9){
         //check if the number is owned by the oppent
         if(std::find(oppPositions.begin(), oppPositions.end(), check) == oppPositions.end()){
+          if(std::find(ownPositions.begin(), ownPositions.end(), check) != ownPositions.end()){
+            return 300;
+          }
           possibleWins++;
           explored.push_back(check);
         }
@@ -307,4 +312,13 @@ bool AI::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){
         }
 	}
 	return (false);
+}
+
+void AI::printBoard(Node *node){
+  auto board = node->getBoard();
+    std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
+              << "\t\t\t-----------" << std::endl
+              << "\t\t\t " << (board[1][0]) << " | " << (board[1][1]) << " | " << (board[1][2]) << std::endl
+              << "\t\t\t-----------" << std::endl
+              << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
 }

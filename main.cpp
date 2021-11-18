@@ -52,7 +52,7 @@ void startGame(int turn){
     displayBoardLayout();
     Node node = Node(board);
     AI aiMax(&node, true, 9, 'X', 1);
-    AI aiMin(&node, false, 9, 'O', 2);
+    AI aiMin(&node, false, 9, 'O', 1);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {

@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include "ABMiniMax.h"
 #include "AB2.h"
 #include "Node.h"
 #include <vector>
@@ -50,10 +49,10 @@ void displayBoard(std::vector<std::vector<char>> board){
 void startGame(int turn){
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
-    //displayBoardLayout();
+
     Node node = Node(board);
-    AI2 aiMax(&node, true, 'X', 1);
-    AI2 aiMin(&node, false, 'O', 1);
+    AI2 aiMax(&node, true, 1);
+    AI2 aiMin(&node, false, 1);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {

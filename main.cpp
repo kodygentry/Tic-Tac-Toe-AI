@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "ABMiniMax.h"
+#include "AB2.h"
 #include "Node.h"
 #include <vector>
 
@@ -52,8 +52,7 @@ void startGame(int turn){
     displayBoardLayout();
     Node node = Node(board);
     AI aiMax(&node, true, 9, 'X', 1);
-    AI aiMin(&node, false, 9, 'O', 1);
-
+    AI aiMin(&node, false, 9, 'O', 2);
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
             board = aiMax.playMove(board, index);

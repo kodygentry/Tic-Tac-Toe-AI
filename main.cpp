@@ -52,14 +52,32 @@ void startGame(int turn){
 
     Node node = Node(board);
     AI2 aiMax(&node, true, 1);
-    AI2 aiMin(&node, false, 1);
+    AI2 aiMin(&node, false, 2);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
-            board = aiMax.playMove(board, index);
+            /*board = aiMax.playMove(board, index);
             std::cout << "X's move" << std::endl;
             displayBoard(board);
-            turn = PLAYER2;
+            turn = PLAYER2;*/
+            int n;
+
+            std::cout << "\n\nEnter move = ";
+            std::cin >> n;
+            n--;
+            row = n / GRID;
+            col = n % GRID;
+            if(board[row][col] == ' ' && n < 9 && n >= 0){
+                char playerMove = PLAYER1MOVE;
+                board[row][col] = playerMove;
+                std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
+                displayBoard(board);
+                turn = PLAYER2;
+            } else if(board[row][col] != ' ' && n < 9 && n >= 0){
+                std::cout << "\nPosition is occupied\n\n";
+            } else if(n < 0 || n > 8){
+                std::cout << "Invalid position\n";
+            }
         } else {
             board = aiMin.playMove(board, index);
             std::cout << "O's move" << std::endl;

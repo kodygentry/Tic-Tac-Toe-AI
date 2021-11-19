@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <bits/stdc++.h>
 #include "AB2.h"
 #include "Node.h"
 
@@ -89,33 +90,10 @@ int AI2::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
 }
 
 int AI2::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
-    char myPlayerMove = (currentPlayer) ? mark : oppMark;
-    char opponentMark = (currentPlayer) ? oppMark : mark;
+    int myAlmostWins = calculateAlmostWins(board, currentPlayer);
+    int oppAlmostWins = calculateAlmostWins(board, !currentPlayer);
 
-    for (int i = 0; i < 3; i++){
-        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-            if(board[i][0] == myPlayerMove)
-                return 1;
-            else if(board[i][0] == opponentMark)
-                return -1;
-        } else if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
-            if(board[0][i] == myPlayerMove)
-                return 1;
-            else if(board[0][i] == opponentMark)
-                return -1;
-        } else if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-            if(board[0][0] == myPlayerMove)
-                return 1;
-            else if(board[0][0] == opponentMark)
-                return -1;
-        } else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-            if(board[0][2] == myPlayerMove)
-                return 1;
-            else if(board[0][2] == opponentMark)
-                return -1;
-        }
-	}
-    return 0;
+    return myAlmostWins - oppAlmostWins;
 }
 
 void AI2::GenerateChildren(char playerMark, Node *curNode){
@@ -145,7 +123,6 @@ void AI2::displayBoard(std::vector<std::vector<char>> board){
 int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
 	char myPlayerMove = (currentPlayer) ? mark : oppMark;
 	int winCount = 0;
-
 
 	// Check # of horizontal possible wins
 	for(int x = 0; x < 3; x++) {
@@ -189,6 +166,80 @@ int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlay
 	}
 
 	return winCount;
+}
+
+int AI2::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentPlayer) {
+    char myPlayerMove = (currentPlayer) ? mark : oppMark;
+    int winCount = 0;
+    for (int x = 0; x < 3; x++) {
+        std::vector<char> moves;
+        for(int y = 0; y < 3; y++) {
+            moves.push_back(board[x][y]);
+        }
+        int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+        int blankCount = count(moves.begin(), moves.end(), ' ');
+        if(myMoveCount == 3) {
+            winCount += 3;
+        } else if(myMoveCount == 2 && blankCount == 1) {
+            winCount += 2;
+        } else if(myMoveCount == 1 && blankCount == 2) {
+            winCount += 1;
+        }
+	}
+
+	for(int y = 0; y < 3; y++) {
+        std::vector<char> moves;
+        for (int x = 0; x < 3; x++) {
+            moves.push_back(board[x][y]);
+        }
+        int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+        int blankCount = count(moves.begin(), moves.end(), ' ');
+        if(myMoveCount == 3) {
+            winCount += 3;
+        } else if(myMoveCount == 2 && blankCount == 1) {
+            winCount += 2;
+        } else if(myMoveCount == 1 && blankCount == 2) {
+            winCount += 1;
+        }
+	}
+
+    std::vector<char> moves;
+	if((board[0][0] == ' ' || board[0][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[2][2] == ' ' || board[2][2] == myPlayerMove)) {
+		moves.push_back(board[0][0]);
+		moves.push_back(board[1][1]);
+		moves.push_back(board[2][2]);
+	}
+	int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+    int blankCount = count(moves.begin(), moves.end(), ' ');
+    if(myMoveCount == 3) {
+        winCount += 3;
+    } else if(myMoveCount == 2 && blankCount == 1) {
+        winCount += 2;
+    } else if(myMoveCount == 1 && blankCount == 2) {
+        winCount += 1;
+    }
+
+    moves.clear();
+	if((board[2][0] == ' ' || board[2][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
+		moves.push_back(board[2][0]);
+		moves.push_back(board[1][1]);
+		moves.push_back(board[0][2]);
+	}
+	myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+    blankCount = count(moves.begin(), moves.end(), ' ');
+    if(myMoveCount == 3) {
+        winCount += 3;
+    } else if(myMoveCount == 2 && blankCount == 1) {
+        winCount += 2;
+    } else if(myMoveCount == 1 && blankCount == 2) {
+        winCount += 1;
+    }
+
+    return winCount;
 }
 
 bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){

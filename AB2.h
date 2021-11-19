@@ -11,6 +11,7 @@ class AI2 {
      int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2(std::vector<std::vector<char>>, bool);
      int findPossibleWins(std::vector<std::vector<char>>, bool);
+     int calculateAlmostWins(std::vector<std::vector<char>>, bool);
      bool winDetection(std::vector<std::vector<char>>, bool);
      void GenerateChildren(char, Node *);
      void displayBoard(std::vector<std::vector<char>>);

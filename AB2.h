@@ -15,7 +15,6 @@ class AI2 {
      bool winDetection(std::vector<std::vector<char>>, bool);
      void GenerateChildren(char, Node *);
      void displayBoard(std::vector<std::vector<char>>);
-     void printNode(Node *);
 
      Node *root;
      bool turn;

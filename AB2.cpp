@@ -3,24 +3,19 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <bits/stdc++.h>
 #include "AB2.h"
 #include "Node.h"
 
-AI2::AI2(Node *root, bool order, char Mark, int heuristicId){
+AI2::AI2(Node *root, bool order, int heuristicId){
     this->root = root;
     turn = order;
-    mark = Mark;
-    oppMark = (mark == 'X') ? 'O' : 'X';
+    mark = turn ? 'X' : 'O';
+    oppMark = turn ? 'O' : 'X';
+    algorithmId = heuristicId;
 }
 
 std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board, int movesTaken) {
-    std::cout << "newwww1" <<std::endl;
-    std::vector<std::vector<char>> board2 = {{'X', 'X', ' '},{'O', 'O', ' '},{' ', ' ', ' '}};
-    Node r2 = Node(board2);
-    Node* root2 = &r2;
-    displayBoard(ABMinimax(root2, 0, turn, 50000, -50000).second);
-    std::cout << "newwww2" <<std::endl;
-
     Node r = Node(board);
     root = &r;
 
@@ -29,7 +24,12 @@ std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> boar
 
 std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt) {
     if(DeepEnough(node->getBoard(), depth, maxPlayer)) {
-        int value = Heuristic1(node->getBoard(), maxPlayer);
+        int value;
+        if(algorithmId == 1)
+            value = Heuristic1(node->getBoard(), maxPlayer);
+        else if(algorithmId == 2)
+            value = Heuristic2(node->getBoard(), maxPlayer);
+
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }
@@ -37,7 +37,12 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int de
     char currMark = (maxPlayer) ? 'X' : 'O';
     GenerateChildren(currMark, node);
     if(node->getChildren().size() == 0) {
-        int value = Heuristic1(node->getBoard(), maxPlayer);
+        int value;
+        if(algorithmId == 1)
+            value = Heuristic1(node->getBoard(), maxPlayer);
+        else if(algorithmId == 2)
+            value = Heuristic2(node->getBoard(), maxPlayer);
+
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }
@@ -84,6 +89,13 @@ int AI2::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
 	return myPossibleWins - opponentPlayerWins;
 }
 
+int AI2::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
+    int myAlmostWins = calculateAlmostWins(board, currentPlayer);
+    int oppAlmostWins = calculateAlmostWins(board, !currentPlayer);
+
+    return myAlmostWins - oppAlmostWins;
+}
+
 void AI2::GenerateChildren(char playerMark, Node *curNode){
     char oppMark = (playerMark == 'X') ? 'O' : 'X';
     std::vector<std::vector<char>> b = curNode->getBoard();
@@ -94,7 +106,6 @@ void AI2::GenerateChildren(char playerMark, Node *curNode){
             if(b[i][j] == ' ') {
                 childB[i][j] = playerMark;
                 curNode->addChild(childB);
-                //displayBoard(childB);
             }
         }
     }
@@ -122,9 +133,6 @@ void AI2::printNode(Node *node){
 int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
 	char myPlayerMove = (currentPlayer) ? mark : oppMark;
 	int winCount = 0;
-
-    //std::cout << myPlayerMove << std::endl;
-    //displayBoard(board);
 
 	// Check # of horizontal possible wins
 	for(int x = 0; x < 3; x++) {
@@ -168,6 +176,80 @@ int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlay
 	}
 
 	return winCount;
+}
+
+int AI2::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentPlayer) {
+    char myPlayerMove = (currentPlayer) ? mark : oppMark;
+    int winCount = 0;
+    for (int x = 0; x < 3; x++) {
+        std::vector<char> moves;
+        for(int y = 0; y < 3; y++) {
+            moves.push_back(board[x][y]);
+        }
+        int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+        int blankCount = count(moves.begin(), moves.end(), ' ');
+        if(myMoveCount == 3) {
+            winCount += 3;
+        } else if(myMoveCount == 2 && blankCount == 1) {
+            winCount += 2;
+        } else if(myMoveCount == 1 && blankCount == 2) {
+            winCount += 1;
+        }
+	}
+
+	for(int y = 0; y < 3; y++) {
+        std::vector<char> moves;
+        for (int x = 0; x < 3; x++) {
+            moves.push_back(board[x][y]);
+        }
+        int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+        int blankCount = count(moves.begin(), moves.end(), ' ');
+        if(myMoveCount == 3) {
+            winCount += 3;
+        } else if(myMoveCount == 2 && blankCount == 1) {
+            winCount += 2;
+        } else if(myMoveCount == 1 && blankCount == 2) {
+            winCount += 1;
+        }
+	}
+
+    std::vector<char> moves;
+	if((board[0][0] == ' ' || board[0][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[2][2] == ' ' || board[2][2] == myPlayerMove)) {
+		moves.push_back(board[0][0]);
+		moves.push_back(board[1][1]);
+		moves.push_back(board[2][2]);
+	}
+	int myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+    int blankCount = count(moves.begin(), moves.end(), ' ');
+    if(myMoveCount == 3) {
+        winCount += 3;
+    } else if(myMoveCount == 2 && blankCount == 1) {
+        winCount += 2;
+    } else if(myMoveCount == 1 && blankCount == 2) {
+        winCount += 1;
+    }
+
+    moves.clear();
+	if((board[2][0] == ' ' || board[2][0] == myPlayerMove)
+		&& (board[1][1] == ' ' || board[1][1] == myPlayerMove)
+		&& (board[0][2] == ' ' || board[0][2] == myPlayerMove)) {
+		moves.push_back(board[2][0]);
+		moves.push_back(board[1][1]);
+		moves.push_back(board[0][2]);
+	}
+	myMoveCount = count(moves.begin(), moves.end(), myPlayerMove);
+    blankCount = count(moves.begin(), moves.end(), ' ');
+    if(myMoveCount == 3) {
+        winCount += 3;
+    } else if(myMoveCount == 2 && blankCount == 1) {
+        winCount += 2;
+    } else if(myMoveCount == 1 && blankCount == 2) {
+        winCount += 1;
+    }
+
+    return winCount;
 }
 
 bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){

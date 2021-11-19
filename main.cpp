@@ -49,6 +49,7 @@ void displayBoard(std::vector<std::vector<char>> board){
 void startGame(int turn){
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
+    //displayBoardLayout();
     displayBoardLayout();
     Node node = Node(board);
     AI aiMax(&node, true, 9, 'X', 1);
@@ -63,6 +64,18 @@ void startGame(int turn){
             displayBoard(board);
             turn = PLAYER2;
             /*int n;
+
+    Node node = Node(board);
+    AI2 aiMax(&node, true, 1);
+    AI2 aiMin(&node, false, 2);
+
+    while (winDetection(board) == false && index != GRID * GRID){
+        if(turn == PLAYER1) {
+            /*board = aiMax.playMove(board, index);
+            std::cout << "X's move" << std::endl;
+            displayBoard(board);
+            turn = PLAYER2;*/
+            int n;
 
             std::cout << "\n\nEnter move = ";
             std::cin >> n;
@@ -80,6 +93,7 @@ void startGame(int turn){
             } else if(n < 0 || n > 8){
                 std::cout << "Invalid position\n";
             }*/
+            }
         } else {
             board = aiMin.playMove(board, index);
             std::cout << "O's move" << std::endl;

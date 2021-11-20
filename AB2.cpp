@@ -19,12 +19,6 @@ AI2::AI2(Node *root, bool order, int heuristicId){
 std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board, int movesTaken) {
     Node r = Node(board);
     root = &r;
-    std::vector<std::vector<char>> testBoard = {{'O', ' ', 'X'}, {' ', 'X', 'X'}, {'O', ' ', ' '}};
-    Node t = Node(testBoard);
-    Node * ugh = &t;
-    std::pair<int, std::vector<std::vector<char>>> testo = ABMinimax(ugh, 0, turn, 50000, -50000);
-    auto UGboard = testo.second;
-    displayBoard(UGboard);
     return ABMinimax(root, 0, turn, 50000, -50000).second;
 }
 
@@ -50,6 +44,8 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int de
             value = Heuristic1(node->getBoard(), maxPlayer);
         else if(algorithmId == 2)
             value = Heuristic2(node->getBoard(), maxPlayer);
+        else if(algorithmId == 3)
+            value = Heuristic3(node->getBoard(), maxPlayer);
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }
@@ -106,7 +102,7 @@ int AI2::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
 int AI2::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
   int me = findMagicWins(board, currentPlayer);
   int opp = findMagicWins(board, !currentPlayer);
-  return (me - opp);
+  return me - opp;
 }
 
 int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer){
@@ -167,9 +163,9 @@ int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer)
   bool myWins = winDetection(board, currentPlayer);
   bool myoppWins = winDetection(board, !currentPlayer);
   if(myWins){
-    return 50000;
+    return 10;
   }else if(myoppWins){
-    return -50000;
+    return -10;
   }else{
     return 0;
   }

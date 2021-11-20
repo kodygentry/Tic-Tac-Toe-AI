@@ -51,12 +51,12 @@ void startGame(int turn){
     int index = 0, row = 0, col = 0; // for depth index
 
     Node node = Node(board);
-    AI2 aiMax(&node, true, 1);
-    AI2 aiMin(&node, false, 3);
+    AI2 aiMax(&node, true, 3);
+    AI2 aiMin(&node, false, 4);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
-            int n;
+            /*int n;
             std::cout << "\n\nEnter move = ";
             std::cin >> n;
             n--;
@@ -72,16 +72,15 @@ void startGame(int turn){
                 std::cout << "\nPosition is occupied\n\n";
             } else if(n < 0 || n > 8){
                 std::cout << "Invalid position\n";
-            }
-          /*
-            board = aiMax.playMove(board, index);
+            }*/
+
+            board = aiMax.playMove(board);
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             turn = PLAYER2;
-            */
         } else {
             std::cout << "O's move" << std::endl;
-            board = aiMin.playMove(board, index);
+            board = aiMin.playMove(board);
             displayBoard(board);
             turn = PLAYER1;
         }

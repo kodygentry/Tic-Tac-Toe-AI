@@ -102,6 +102,9 @@ int AI2::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
 int AI2::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
   int me = findMagicWins(board, currentPlayer);
   int opp = findMagicWins(board, !currentPlayer);
+  if(currentPlayer){
+    return opp - me;
+  }
   return me - opp;
 }
 

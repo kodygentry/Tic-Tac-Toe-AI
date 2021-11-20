@@ -1,4 +1,5 @@
 #include "Node.h"
+#include <vector>
 
 class AI2 {
   public:
@@ -10,11 +11,14 @@ class AI2 {
      bool DeepEnough(std::vector<std::vector<char>>, int, bool);
      int Heuristic1(std::vector<std::vector<char>>, bool);
      int Heuristic2(std::vector<std::vector<char>>, bool);
+     int Heuristic3(std::vector<std::vector<char>>, bool);
      int findPossibleWins(std::vector<std::vector<char>>, bool);
      int calculateAlmostWins(std::vector<std::vector<char>>, bool);
+     int findMagicWins(std::vector<std::vector<char>>, bool);
      bool winDetection(std::vector<std::vector<char>>, bool);
      void GenerateChildren(char, Node *);
      void displayBoard(std::vector<std::vector<char>>);
+     void displayNode(Node *);
 
      Node *root;
      bool turn;

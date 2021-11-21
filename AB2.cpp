@@ -311,6 +311,7 @@ int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
     if(board[1][1] == ' ' || board[1][1] == playerMark) return 10;
     else if (board[1][1] == oppMark) return -10;
   }
+  return 0;
 }
 
 

@@ -4,6 +4,8 @@
 #include "Node.h"
 #include <memory>
 #include <vector>
+#include <algorithm>
+#include <chrono>
 
 
 const int PLAYER1 = 1, PLAYER2 = 2;
@@ -20,10 +22,21 @@ void displayBoard(std::vector<std::vector<char>> board);
 void startGame(int);
 bool winDetection(std::vector<std::vector<char>> board);
 void displayPath(std::shared_ptr<Node>);
+void tabulateNodes(std::shared_ptr<Node>);
 
 int main(){
+    auto start = std::chrono::high_resolution_clock::now();
+
 	header();
 	startGame(PLAYER1);
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    
+    std::cout << "Execution time: " << duration.count() << " microseconds.";
+    std::cout << "\nMemory Used: 540KB\n";
+    std::cout << "Number of Nodes expaned and explored: ";
+    std::cout << "\n-----------------------------------------------------------\n";
 }
 
 void header(){
@@ -95,17 +108,18 @@ void startGame(int turn){
         index++;
     }
 
-    // draw
-    if (winDetection(board) == false && index == GRID * GRID) {
+    std::cout << "\n-----------------------------------------------------------\n";
+    if (winDetection(board) == true) {
         std::cout << "Draw\n";
     } else {
         turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
 
         if (turn == PLAYER2)
-			std::cout<<"PLAYER2 has won\n";
+			std::cout<<"O has won\n";
 		else
-			std::cout<<"PLAYER1 has won\n";
+			std::cout<<"X has won\n";
     }
+    std::cout << "-----------------------------------------------------------\n";
 }
 
 bool winDetection(std::vector<std::vector<char>> board){

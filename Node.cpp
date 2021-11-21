@@ -1,16 +1,18 @@
 #include "Node.h"
+#include <memory>
 #include <vector>
 
 Node::Node(std::vector<std::vector<char>> board){
+  this->parent = nullptr;
   this->board = board;
 }
 
 void Node::addChild(std::vector<std::vector<char>> child){
-  Node *sonPtr = new Node(child);
+  std::shared_ptr<Node> sonPtr = std::make_shared<Node>(Node(child)) ;
   children.push_back(sonPtr);
 }
 
-Node* Node::getChild(int child){
+std::shared_ptr<Node> Node::getChild(int child){
   if(child >= children.size()){
     return nullptr;
   }else{
@@ -22,6 +24,6 @@ std::vector<std::vector<char>> Node::getBoard(){
   return this->board;
 }
 
-std::vector<Node *> Node::getChildren(){
+std::vector<std::shared_ptr<Node>> Node::getChildren(){
   return children;
 }

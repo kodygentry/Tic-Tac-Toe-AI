@@ -17,7 +17,7 @@ AI2::AI2(bool order, int heuristicId) : root(nullptr) {
 }
 
 
-std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board, int movesTaken) {
+std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board) {
     expNodes = std::make_shared<Node>(Node(board));
     root = std::make_shared<Node>(Node(board));
     return ABMinimax(root, 0, turn, 50000, -50000).second;
@@ -32,6 +32,8 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<No
             value = Heuristic2(node->getBoard(), maxPlayer);
         else if(algorithmId == 3)
             value = Heuristic3(node->getBoard(), maxPlayer);
+        else if(algorithmId == 4)
+            value = Heuristic4(node->getBoard(), maxPlayer);
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }
@@ -46,6 +48,8 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<No
             value = Heuristic2(node->getBoard(), maxPlayer);
         else if(algorithmId == 3)
             value = Heuristic3(node->getBoard(), maxPlayer);
+        else if(algorithmId == 4)
+            value = Heuristic4(node->getBoard(), maxPlayer);
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }

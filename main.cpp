@@ -54,8 +54,8 @@ void startGame(int turn){
 
     Node node = Node(board);
 
-    AI2 aiMax(true, 2);
-    AI2 aiMin(false, 3);
+    AI2 aiMax(true, 3);
+    AI2 aiMin(false, 4);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
@@ -76,17 +76,15 @@ void startGame(int turn){
                 std::cout << "\nPosition is occupied\n\n";
             } else if(n < 0 || n > 8){
                 std::cout << "Invalid position\n";
-            }
-            */
-            board = aiMax.playMove(board, index);
             }*/
 
             board = aiMax.playMove(board);
+
             std::cout << "X's move" << std::endl;
             displayBoard(board);
-            std::cout << "Displaying Explored Expanded Nodes\n";
-            displayPath(aiMax.getExpNodes());
-            std::cout << "Finished Exploring Expanded Nodes\n";
+            //std::cout << "Displaying Explored Expanded Nodes\n";
+            //displayPath(aiMax.getExpNodes());
+            //std::cout << "Finished Exploring Expanded Nodes\n";
             turn = PLAYER2;
         } else {
             std::cout << "O's move" << std::endl;

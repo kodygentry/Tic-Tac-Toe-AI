@@ -6,7 +6,7 @@
 class AI2 {
   public:
      AI2(bool, int);
-     std::vector<std::vector<char>> playMove(std::vector<std::vector<char>>, int);
+     std::vector<std::vector<char>> playMove(std::vector<std::vector<char>>);
      std::shared_ptr<Node> getExpNodes();
 
   private:

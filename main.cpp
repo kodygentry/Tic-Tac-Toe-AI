@@ -25,18 +25,8 @@ void displayPath(std::shared_ptr<Node>);
 void tabulateNodes(std::shared_ptr<Node>);
 
 int main(){
-    auto start = std::chrono::high_resolution_clock::now();
-
 	header();
 	startGame(PLAYER1);
-
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    
-    std::cout << "Execution time: " << duration.count() << " microseconds.";
-    std::cout << "\nMemory Used: 540KB\n";
-    std::cout << "Number of Nodes expaned and explored: ";
-    std::cout << "\n-----------------------------------------------------------\n";
 }
 
 void header(){
@@ -62,6 +52,7 @@ void displayBoard(std::vector<std::vector<char>> board){
 }
 
 void startGame(int turn){
+    auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0, row = 0, col = 0; // for depth index
 
@@ -69,6 +60,10 @@ void startGame(int turn){
 
     AI2 aiMax(true, 3);
     AI2 aiMin(false, 4);
+
+    int maxNodes = 0;
+    int minNodes = 0;
+    
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
@@ -95,6 +90,7 @@ void startGame(int turn){
 
             std::cout << "X's move" << std::endl;
             displayBoard(board);
+            maxNodes += aiMax.getExpNodes()->getChildren().size();
             //std::cout << "Displaying Explored Expanded Nodes\n";
             //displayPath(aiMax.getExpNodes());
             //std::cout << "Finished Exploring Expanded Nodes\n";
@@ -103,13 +99,14 @@ void startGame(int turn){
             std::cout << "O's move" << std::endl;
             board = aiMin.playMove(board);
             displayBoard(board);
+            minNodes += aiMin.getExpNodes()->getChildren().size();
             turn = PLAYER1;
         }
         index++;
     }
 
     std::cout << "\n-----------------------------------------------------------\n";
-    if (winDetection(board) == true) {
+    if (winDetection(board) == false) {
         std::cout << "Draw\n";
     } else {
         turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
@@ -119,7 +116,15 @@ void startGame(int turn){
 		else
 			std::cout<<"X has won\n";
     }
-    std::cout << "-----------------------------------------------------------\n";
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    
+
+    
+    std::cout << "Execution time: " << duration.count() << " microseconds.";
+    std::cout << "\nMemory Used: 540KB\n";
+    std::cout << "Total nodes expanded and explored: " << maxNodes + minNodes << "\n";
+    std::cout << "\n-----------------------------------------------------------\n";
 }
 
 bool winDetection(std::vector<std::vector<char>> board){

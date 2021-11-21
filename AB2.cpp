@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -8,8 +9,7 @@
 #include "AB2.h"
 #include "Node.h"
 
-AI2::AI2(Node *root, bool order, int heuristicId){
-    this->root = root;
+AI2::AI2(bool order, int heuristicId) : root(nullptr) {
     turn = order;
     mark = turn ? 'X' : 'O';
     oppMark = turn ? 'O' : 'X';
@@ -17,12 +17,12 @@ AI2::AI2(Node *root, bool order, int heuristicId){
 }
 
 std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board, int movesTaken) {
-    Node r = Node(board);
-    root = &r;
+    expNodes = std::make_shared<Node>(Node(board));
+    root = std::make_shared<Node>(Node(board));
     return ABMinimax(root, 0, turn, 50000, -50000).second;
 }
 
-std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int depth, bool maxPlayer, int ut, int pt) {
+std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<Node> node, int depth, bool maxPlayer, int ut, int pt) {
     if(DeepEnough(node->getBoard(), depth, maxPlayer)) {
         int value;
         if(algorithmId == 1)
@@ -31,7 +31,6 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int de
             value = Heuristic2(node->getBoard(), maxPlayer);
         else if(algorithmId == 3)
             value = Heuristic3(node->getBoard(), maxPlayer);
-
         value = (maxPlayer) ? value : -value;
         return std::make_pair(value, node->getBoard());
     }
@@ -52,15 +51,18 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(Node *node, int de
 
     std::vector<std::vector<char>> bestBoard;
     std::vector<int> values;
+    int cnt = 0;
     for(auto i : node->getChildren()) {
+        expNodes->addChild(i->getBoard());
         std::pair<int, std::vector<std::vector<char>>> pairVal = ABMinimax(i, depth + 1, !maxPlayer, -pt, -ut);
         int newValue = -pairVal.first;
         if(newValue > pt) {
             bestBoard = i->getBoard();
             pt = newValue;
         }
-        if(pt >= ut)
+        if(pt >= ut){
             return std::make_pair(pt, i->getBoard());
+        }
     }
     return std::make_pair(pt, bestBoard);
 }
@@ -174,7 +176,7 @@ int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer)
   }
 }
 
-void AI2::GenerateChildren(char playerMark, Node *curNode){
+void AI2::GenerateChildren(char playerMark, std::shared_ptr<Node> curNode){
     char oppMark = (playerMark == 'X') ? 'O' : 'X';
     std::vector<std::vector<char>> b = curNode->getBoard();
 
@@ -337,7 +339,7 @@ bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer)
 	return (false);
 }
 
-void AI2::displayNode(Node *node){
+void AI2::displayNode(std::shared_ptr<Node> node){
   auto board = node->getBoard();
     std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
               << "\t\t\t-----------" << std::endl
@@ -345,4 +347,8 @@ void AI2::displayNode(Node *node){
               << "\t\t\t-----------" << std::endl
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
     std::cout << "\n" << std::endl;
+}
+
+std::shared_ptr<Node> AI2::getExpNodes(){
+  return expNodes;
 }

@@ -2,6 +2,7 @@
 #include <string>
 #include "AB2.h"
 #include "Node.h"
+#include <memory>
 #include <vector>
 
 
@@ -18,6 +19,7 @@ void displayBoard(std::vector<std::vector<char>> board);
 // game logic
 void startGame(int);
 bool winDetection(std::vector<std::vector<char>> board);
+void displayPath(std::shared_ptr<Node>);
 
 int main(){
 	header();
@@ -51,11 +53,12 @@ void startGame(int turn){
     int index = 0, row = 0, col = 0; // for depth index
 
     Node node = Node(board);
-    AI2 aiMax(&node, true, 1);
-    AI2 aiMin(&node, false, 3);
+    AI2 aiMax(true, 2);
+    AI2 aiMin(false, 3);
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
+          /*
             int n;
             std::cout << "\n\nEnter move = ";
             std::cin >> n;
@@ -73,12 +76,14 @@ void startGame(int turn){
             } else if(n < 0 || n > 8){
                 std::cout << "Invalid position\n";
             }
-          /*
+            */
             board = aiMax.playMove(board, index);
             std::cout << "X's move" << std::endl;
             displayBoard(board);
+            std::cout << "Displaying Explored Expanded Nodes\n";
+            displayPath(aiMax.getExpNodes());
+            std::cout << "Finished Exploring Expanded Nodes\n";
             turn = PLAYER2;
-            */
         } else {
             std::cout << "O's move" << std::endl;
             board = aiMin.playMove(board, index);
@@ -123,3 +128,16 @@ bool winDetection(std::vector<std::vector<char>> board){
 	return(false);
 }
 
+void displayPath(std::shared_ptr<Node> expNode){
+  displayBoard(expNode->getBoard());
+  for(auto i : expNode->getChildren()){
+    std::cout << "Expanded Node\n";
+    displayBoard(i->getBoard());
+    std::cout << "Moving on to next child\n";
+  }
+  std::cout << "Exiting displayPath()\n";
+}
+
+void tabulateNodes(std::shared_ptr<Node> expNode){
+  std::cout << "Number of Nodes expaned and explored: " << expNode->getChildren().size() << "\n";
+}

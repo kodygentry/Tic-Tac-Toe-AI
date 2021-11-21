@@ -53,6 +53,7 @@ void startGame(int turn){
     int index = 0, row = 0, col = 0; // for depth index
 
     Node node = Node(board);
+
     AI2 aiMax(true, 2);
     AI2 aiMin(false, 3);
 
@@ -78,6 +79,9 @@ void startGame(int turn){
             }
             */
             board = aiMax.playMove(board, index);
+            }*/
+
+            board = aiMax.playMove(board);
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             std::cout << "Displaying Explored Expanded Nodes\n";
@@ -86,7 +90,7 @@ void startGame(int turn){
             turn = PLAYER2;
         } else {
             std::cout << "O's move" << std::endl;
-            board = aiMin.playMove(board, index);
+            board = aiMin.playMove(board);
             displayBoard(board);
             turn = PLAYER1;
         }

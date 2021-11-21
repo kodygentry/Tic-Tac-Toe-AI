@@ -16,6 +16,7 @@ AI2::AI2(bool order, int heuristicId) : root(nullptr) {
     algorithmId = heuristicId;
 }
 
+
 std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board, int movesTaken) {
     expNodes = std::make_shared<Node>(Node(board));
     root = std::make_shared<Node>(Node(board));
@@ -110,61 +111,16 @@ int AI2::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
   return me - opp;
 }
 
+int AI2::Heuristic4(std::vector<std::vector<char>> board, bool currentPlayer){
+  // eval functions that returns if currentPlayer position is good/bad based on open board lengths
+  // priority is open lengths and middle position after lengths checked
+  int myOpen = openLengths(board, currentPlayer);
+  int opOpen = openLengths(board, !currentPlayer);
+  return myOpen - opOpen;
+  // resource - Charles R. Dyer, U of Wisconsin-Madison - https://www.csee.umbc.edu/courses/undergraduate/471/spring19/01/notes/07_games/07a.pdf
+}
+
 int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer){
-  /*
-  int myWins = 0;
-  std::vector<std::vector<int>> ms = {{2, 7, 6}, {9, 5, 1}, {4, 3, 8}};
-  std::vector<int> mySpots;
-  std::vector<int> oppSpots;
-  std::vector<int> neuSpots;
-  char myMark = (currentPlayer) ? 'X' : 'O';
-  for(size_t i = 0; i != 3; i++){
-    for(size_t j = 0; j != 3; j++){
-      if(board[i][j] == myMark){
-        mySpots.push_back(ms[i][j]);
-      }else if(board[i][j] == ' '){
-        neuSpots.push_back(ms[i][j]);
-      }else{
-        oppSpots.push_back(ms[i][j]);
-      }
-    }
-  }
-  for(size_t i = 0; i != mySpots.size(); i++){
-    for(size_t j = i + 1; j != mySpots.size(); j++){
-      int check = 15 - mySpots[i] - mySpots[j];
-      if(check > 0 && check <= 9){
-        if(std::find(mySpots.begin(), mySpots.end(), check) != mySpots.end()){
-          //we won FUCCKKER YESSS
-          return 50000;
-        }else if(std::find(neuSpots.begin(), neuSpots.end(), check) != neuSpots.end()){
-          //we have a possible win here
-          myWins += 2;
-        }
-      }
-    }
-  }
-  for(size_t i = 0; i != oppSpots.size(); i++){
-    for(size_t j = i + 1; j != oppSpots.size(); j++){
-      int check = 15 - oppSpots[i] - oppSpots[j];
-      if(check > 0 && check <= 9){
-        if(std::find(oppSpots.begin(), oppSpots.end(), check) != oppSpots.end()){
-          //opponent has won fuck!!!!
-          return -50000;
-        }else if(std::find(mySpots.begin(), mySpots.end(), check) != mySpots.end()){
-          //We wanna block if we don't win
-          myWins += 5000;
-        }else if(std::find(neuSpots.begin(), neuSpots.end(), check) != neuSpots.end()){
-//if the opponent has a possible win that isn't good;
-          myWins -= -500;
-        }
-      }
-    }
-  }
-  for(size_t i = 0; i != neuSpots.size(); i++){
-    myWins++;
-  }
-  return myWins;
-  */
   bool myWins = winDetection(board, currentPlayer);
   bool myoppWins = winDetection(board, !currentPlayer);
   if(myWins){
@@ -321,6 +277,38 @@ int AI2::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentP
 
     return winCount;
 }
+
+int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
+  char playerMark = (currentPlayer) ? mark : oppMark;
+  char oppMark = (currentPlayer) ? oppMark : mark;
+
+  for(int i = 0; i < 3; i++){
+    // check rows
+    if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] == ' ') return 10;              // check if length is clear, return good pos
+    else if (board[i][0] == playerMark || board[i][1] == playerMark || board[i][2] == playerMark) return 10;   // if not, check if my player is on length, return good pos
+    else if (board[i][0] == oppMark || board[i][1] == oppMark || board[i][2] == oppMark) return -10;          // if not, check if opp player is on length, return bad poss
+
+    // check columns
+    if (board[0][i] == board[1][i] || board[1][i] == board[2][i] || board[0][i] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[0][i] == playerMark || board[1][i] == playerMark || board[2][i] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[i][0] == oppMark || board[i][1] == oppMark || board[i][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+
+    // check diagnals
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[0][0] == playerMark || board[1][1] == playerMark || board[2][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[0][0] == oppMark || board[1][1] == oppMark || board[2][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+
+    if (board[2][0] == board[1][1] && board[1][1] == board[0][2] && board[2][0] == ' ') return 10;            // check if length is clear, return good pos
+    else if (board[2][0] == playerMark || board[1][1] == playerMark || board[0][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
+    else if (board[2][0] == oppMark || board[1][1] == oppMark || board[0][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
+
+
+    // middle priority check after lengths (applies only for first move)
+    if(board[1][1] == ' ' || board[1][1] == playerMark) return 10;
+    else if (board[1][1] == oppMark) return -10;
+  }
+}
+
 
 bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){
     char myPlayerMove = (currentPlayer) ? mark : oppMark;

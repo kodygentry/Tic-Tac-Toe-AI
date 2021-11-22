@@ -19,7 +19,7 @@ void displayBoardLayout();
 void displayBoard(std::vector<std::vector<char>> board);
 
 // game logic
-void startGame(int);
+void startGame(int, bool);
 bool winDetection(std::vector<std::vector<char>> board);
 void displayPath(std::shared_ptr<Node>);
 void tabulateNodes(std::shared_ptr<Node>);

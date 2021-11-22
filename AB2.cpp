@@ -287,6 +287,7 @@ int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
   char oppMark = (currentPlayer) ? oppMark : mark;
 
   for(int i = 0; i < 3; i++){
+
     // check rows
     if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] == ' ') return 10;              // check if length is clear, return good pos
     else if (board[i][0] == playerMark || board[i][1] == playerMark || board[i][2] == playerMark) return 10;   // if not, check if my player is on length, return good pos
@@ -306,10 +307,6 @@ int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
     else if (board[2][0] == playerMark || board[1][1] == playerMark || board[0][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
     else if (board[2][0] == oppMark || board[1][1] == oppMark || board[0][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
 
-
-    // middle priority check after lengths (applies only for first move)
-    if(board[1][1] == ' ' || board[1][1] == playerMark) return 10;
-    else if (board[1][1] == oppMark) return -10;
   }
   return 0;
 }

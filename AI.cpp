@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <utility>
 #include <bits/stdc++.h>
-#include "AB2.h"
+#include "AI.h"
 #include "Node.h"
 
-AI2::AI2(bool order, int heuristicId) : root(nullptr) {
+AI::AI(bool order, int heuristicId) : root(nullptr) {
     turn = order;
     mark = turn ? 'X' : 'O';
     oppMark = turn ? 'O' : 'X';
@@ -17,13 +17,13 @@ AI2::AI2(bool order, int heuristicId) : root(nullptr) {
 }
 
 
-std::vector<std::vector<char>> AI2::playMove(std::vector<std::vector<char>> board) {
+std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board) {
     expNodes = std::make_shared<Node>(Node(board));
     root = std::make_shared<Node>(Node(board));
     return ABMinimax(root, 0, turn, 50000, -50000).second;
 }
 
-std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<Node> node, int depth, bool maxPlayer, int ut, int pt) {
+std::pair<int, std::vector<std::vector<char>>> AI::ABMinimax(std::shared_ptr<Node> node, int depth, bool maxPlayer, int ut, int pt) {
     if(DeepEnough(node->getBoard(), depth, maxPlayer)) {
         int value;
         if(algorithmId == 1)
@@ -55,8 +55,6 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<No
     }
 
     std::vector<std::vector<char>> bestBoard;
-    std::vector<int> values;
-    int cnt = 0;
     for(auto i : node->getChildren()) {
         expNodes->addChild(i->getBoard());
         std::pair<int, std::vector<std::vector<char>>> pairVal = ABMinimax(i, depth + 1, !maxPlayer, -pt, -ut);
@@ -72,7 +70,7 @@ std::pair<int, std::vector<std::vector<char>>> AI2::ABMinimax(std::shared_ptr<No
     return std::make_pair(pt, bestBoard);
 }
 
-bool AI2::DeepEnough(std::vector<std::vector<char>> board, int currentDepth, bool currentPlayer) {
+bool AI::DeepEnough(std::vector<std::vector<char>> board, int currentDepth, bool currentPlayer) {
     bool myPlayerWin = winDetection(board, currentPlayer);
     bool oppPlayerWin = winDetection(board, !currentPlayer);
     if(myPlayerWin || oppPlayerWin)
@@ -93,20 +91,20 @@ bool AI2::DeepEnough(std::vector<std::vector<char>> board, int currentDepth, boo
     return true;
 }
 
-int AI2::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::Heuristic1(std::vector<std::vector<char>> board, bool currentPlayer){
 	int myPossibleWins = findPossibleWins(board, currentPlayer);
 	int opponentPlayerWins = findPossibleWins(board, !currentPlayer);
 	return myPossibleWins - opponentPlayerWins;
 }
 
-int AI2::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::Heuristic2(std::vector<std::vector<char>> board, bool currentPlayer){
     int myAlmostWins = calculateAlmostWins(board, currentPlayer);
     int oppAlmostWins = calculateAlmostWins(board, !currentPlayer);
 
     return myAlmostWins - oppAlmostWins;
 }
 
-int AI2::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
   int me = findMagicWins(board, currentPlayer);
   int opp = findMagicWins(board, !currentPlayer);
   if(currentPlayer){
@@ -115,7 +113,7 @@ int AI2::Heuristic3(std::vector<std::vector<char>> board, bool currentPlayer){
   return me - opp;
 }
 
-int AI2::Heuristic4(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::Heuristic4(std::vector<std::vector<char>> board, bool currentPlayer){
   // eval functions that returns if currentPlayer position is good/bad based on open board lengths
   // priority is open lengths and middle position after lengths checked
   int myOpen = openLengths(board, currentPlayer);
@@ -124,7 +122,7 @@ int AI2::Heuristic4(std::vector<std::vector<char>> board, bool currentPlayer){
   // resource - Charles R. Dyer, U of Wisconsin-Madison - https://www.csee.umbc.edu/courses/undergraduate/471/spring19/01/notes/07_games/07a.pdf
 }
 
-int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer){
   bool myWins = winDetection(board, currentPlayer);
   bool myoppWins = winDetection(board, !currentPlayer);
   if(myWins){
@@ -136,7 +134,7 @@ int AI2::findMagicWins(std::vector<std::vector<char>> board, bool currentPlayer)
   }
 }
 
-void AI2::GenerateChildren(char playerMark, std::shared_ptr<Node> curNode){
+void AI::GenerateChildren(char playerMark, std::shared_ptr<Node> curNode){
     char oppMark = (playerMark == 'X') ? 'O' : 'X';
     std::vector<std::vector<char>> b = curNode->getBoard();
 
@@ -151,7 +149,7 @@ void AI2::GenerateChildren(char playerMark, std::shared_ptr<Node> curNode){
     }
 }
 
-void AI2::displayBoard(std::vector<std::vector<char>> board){
+void AI::displayBoard(std::vector<std::vector<char>> board){
     std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
               << "\t\t\t-----------" << std::endl
               << "\t\t\t " << (board[1][0]) << " | " << (board[1][1]) << " | " << (board[1][2]) << std::endl
@@ -160,7 +158,7 @@ void AI2::displayBoard(std::vector<std::vector<char>> board){
     std::cout << "\n" << std::endl;
 }
 
-int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlayer){
 	char myPlayerMove = (currentPlayer) ? mark : oppMark;
 	int winCount = 0;
 
@@ -208,7 +206,7 @@ int AI2::findPossibleWins(std::vector<std::vector<char>> board, bool currentPlay
 	return winCount;
 }
 
-int AI2::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentPlayer) {
+int AI::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentPlayer) {
     char myPlayerMove = (currentPlayer) ? mark : oppMark;
     int winCount = 0;
     for (int x = 0; x < 3; x++) {
@@ -282,12 +280,11 @@ int AI2::calculateAlmostWins(std::vector<std::vector<char>> board, bool currentP
     return winCount;
 }
 
-int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
+int AI::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
   char playerMark = (currentPlayer) ? mark : oppMark;
   char oppMark = (currentPlayer) ? oppMark : mark;
 
   for(int i = 0; i < 3; i++){
-
     // check rows
     if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] == ' ') return 10;              // check if length is clear, return good pos
     else if (board[i][0] == playerMark || board[i][1] == playerMark || board[i][2] == playerMark) return 10;   // if not, check if my player is on length, return good pos
@@ -306,13 +303,12 @@ int AI2::openLengths(std::vector<std::vector<char>> board, bool currentPlayer){
     if (board[2][0] == board[1][1] && board[1][1] == board[0][2] && board[2][0] == ' ') return 10;            // check if length is clear, return good pos
     else if (board[2][0] == playerMark || board[1][1] == playerMark || board[0][2] == playerMark) return 10; // if not, check if my player is on length, return good pos
     else if (board[2][0] == oppMark || board[1][1] == oppMark || board[0][2] == oppMark) return -10;        // if not, check if opp player is on length, return bad poss
-
   }
   return 0;
 }
 
 
-bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){
+bool AI::winDetection(std::vector<std::vector<char>> board, bool currentPlayer){
     char myPlayerMove = (currentPlayer) ? mark : oppMark;
 
     for (int i = 0; i < 3; i++){
@@ -329,7 +325,7 @@ bool AI2::winDetection(std::vector<std::vector<char>> board, bool currentPlayer)
 	return (false);
 }
 
-void AI2::displayNode(std::shared_ptr<Node> node){
+void AI::displayNode(std::shared_ptr<Node> node){
   auto board = node->getBoard();
     std::cout << "\t\t\t " << (board[0][0]) << " | " << (board[0][1]) << " | " << (board[0][2]) << std::endl
               << "\t\t\t-----------" << std::endl
@@ -339,6 +335,6 @@ void AI2::displayNode(std::shared_ptr<Node> node){
     std::cout << "\n" << std::endl;
 }
 
-std::shared_ptr<Node> AI2::getExpNodes(){
+std::shared_ptr<Node> AI::getExpNodes(){
   return expNodes;
 }

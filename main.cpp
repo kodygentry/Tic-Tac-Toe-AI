@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "AB2.h"
+#include "AI.h"
 #include "Node.h"
 #include <memory>
 #include <vector>
@@ -54,16 +54,13 @@ void displayBoard(std::vector<std::vector<char>> board){
 void startGame(int turn){
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
-    int index = 0, row = 0, col = 0; // for depth index
+    int index = 0; // for depth index
 
-    Node node = Node(board);
-
-    AI2 aiMax(true, 3);
-    AI2 aiMin(false, 4);
+    AI aiMax(true, 3);
+    AI aiMin(false, 4);
 
     int maxNodes = 0;
     int minNodes = 0;
-    
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
@@ -91,15 +88,18 @@ void startGame(int turn){
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             maxNodes += aiMax.getExpNodes()->getChildren().size();
-            //std::cout << "Displaying Explored Expanded Nodes\n";
-            //displayPath(aiMax.getExpNodes());
-            //std::cout << "Finished Exploring Expanded Nodes\n";
+            /*std::cout << "Displaying Explored Max Expanded Nodes\n";
+            displayPath(aiMax.getExpNodes());
+            std::cout << "Finished Exploring Max Expanded Nodes\n";*/
             turn = PLAYER2;
         } else {
             std::cout << "O's move" << std::endl;
             board = aiMin.playMove(board);
             displayBoard(board);
             minNodes += aiMin.getExpNodes()->getChildren().size();
+            /*std::cout << "Displaying Explored Min Expanded Nodes\n";
+            displayPath(aiMin.getExpNodes());
+            std::cout << "Finished Exploring Min Expanded Nodes\n";*/
             turn = PLAYER1;
         }
         index++;
@@ -118,11 +118,8 @@ void startGame(int turn){
     }
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    
 
-    
-    std::cout << "Execution time: " << duration.count() << " microseconds.";
-    std::cout << "\nMemory Used: 540KB\n";
+    std::cout << "Execution time: " << duration.count() << " microseconds.\n";
     std::cout << "Total nodes expanded and explored: " << maxNodes + minNodes << "\n";
     std::cout << "\n-----------------------------------------------------------\n";
 }

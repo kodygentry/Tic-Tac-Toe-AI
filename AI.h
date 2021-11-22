@@ -3,9 +3,9 @@
 #include <vector>
 #include <deque>
 
-class AI2 {
+class AI {
   public:
-     AI2(bool, int);
+     AI(bool, int);
      std::vector<std::vector<char>> playMove(std::vector<std::vector<char>>);
      std::shared_ptr<Node> getExpNodes();
 

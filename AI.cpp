@@ -16,7 +16,6 @@ AI::AI(bool order, int heuristicId) : root(nullptr) {
     algorithmId = heuristicId;
 }
 
-
 std::vector<std::vector<char>> AI::playMove(std::vector<std::vector<char>> board) {
     expNodes = std::make_shared<Node>(Node(board));
     root = std::make_shared<Node>(Node(board));

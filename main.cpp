@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 #include "AI.h"
 #include "Node.h"
 #include <memory>
@@ -19,14 +20,20 @@ void displayBoardLayout();
 void displayBoard(std::vector<std::vector<char>> board);
 
 // game logic
-void startGame(int);
+void startGame(int, bool);
 bool winDetection(std::vector<std::vector<char>> board);
 void displayPath(std::shared_ptr<Node>);
 void tabulateNodes(std::shared_ptr<Node>);
 
-int main(){
+int main(int argc, char **argv){
+	bool showSteps = false;
+	if(argc > 1) {
+		if(strcmp(argv[1], "-d") == 0) {
+			showSteps = true;
+		}
+	}
 	header();
-	startGame(PLAYER1);
+	startGame(PLAYER1, showSteps);
 }
 
 void header(){
@@ -51,55 +58,51 @@ void displayBoard(std::vector<std::vector<char>> board){
               << "\t\t\t " << (board[2][0]) << " | " << (board[2][1]) << " | " << (board[2][2]) << std::endl;
 }
 
-void startGame(int turn){
+void startGame(int turn, bool showSteps) {
+	int aiMaxId = 1;
+	std::cout << "Enter evaluation function for Max (1-4): ";
+	std::cin >> aiMaxId;
+	int aiMinId = 1;
+	std::cout << "Enter evaluation function for Min (1-4): ";
+	std::cin >> aiMinId;
+
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<char>> board(GRID, std::vector<char>(GRID, ' '));
     int index = 0; // for depth index
 
-    AI aiMax(true, 3);
-    AI aiMin(false, 4);
+    AI aiMax(true, aiMaxId); //last number is heuristic id
+    AI aiMin(false, aiMinId); //last number is heuristic id
 
     int maxNodes = 0;
     int minNodes = 0;
 
     while (winDetection(board) == false && index != GRID * GRID){
         if(turn == PLAYER1) {
-          /*
-            int n;
-            std::cout << "\n\nEnter move = ";
-            std::cin >> n;
-            n--;
-            row = n / GRID;
-            col = n % GRID;
-            if(board[row][col] == ' ' && n < 9 && n >= 0){
-                char playerMove = 'X';
-                board[row][col] = playerMove;
-                std::cout << "Player " << turn << " has put an " << playerMove << " in cell " << n+1 << "\n\n";
-                displayBoard(board);
-                turn = PLAYER2;
-            } else if(board[row][col] != ' ' && n < 9 && n >= 0){
-                std::cout << "\nPosition is occupied\n\n";
-            } else if(n < 0 || n > 8){
-                std::cout << "Invalid position\n";
-            }*/
-
             board = aiMax.playMove(board);
 
             std::cout << "X's move" << std::endl;
             displayBoard(board);
             maxNodes += aiMax.getExpNodes()->getChildren().size();
-            /*std::cout << "Displaying Explored Max Expanded Nodes\n";
-            displayPath(aiMax.getExpNodes());
-            std::cout << "Finished Exploring Max Expanded Nodes\n";*/
+
+			if(showSteps) {
+				std::cout << "Displaying Explored Max Expanded Nodes\n";
+				displayPath(aiMax.getExpNodes());
+				std::cout << "Finished Exploring Max Expanded Nodes\n";
+			}
+
             turn = PLAYER2;
         } else {
             std::cout << "O's move" << std::endl;
             board = aiMin.playMove(board);
             displayBoard(board);
             minNodes += aiMin.getExpNodes()->getChildren().size();
-            /*std::cout << "Displaying Explored Min Expanded Nodes\n";
-            displayPath(aiMin.getExpNodes());
-            std::cout << "Finished Exploring Min Expanded Nodes\n";*/
+
+            if(showSteps) {
+				std::cout << "Displaying Explored Min Expanded Nodes\n";
+				displayPath(aiMin.getExpNodes());
+				std::cout << "Finished Exploring Min Expanded Nodes\n";
+			}
+
             turn = PLAYER1;
         }
         index++;
@@ -112,14 +115,14 @@ void startGame(int turn){
         turn = (turn == PLAYER1) ? PLAYER2 : PLAYER1;
 
         if (turn == PLAYER2)
-			std::cout<<"O has won\n";
+			std::cout<< "O has won\n";
 		else
-			std::cout<<"X has won\n";
+			std::cout<< "X has won\n";
     }
     auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-    std::cout << "Execution time: " << duration.count() << " microseconds.\n";
+    std::cout << "Execution time: " << duration.count() << " milliseconds.\n";
     std::cout << "Total nodes expanded and explored: " << maxNodes + minNodes << "\n";
     std::cout << "\n-----------------------------------------------------------\n";
 }

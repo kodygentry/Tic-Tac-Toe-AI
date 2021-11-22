@@ -1,6 +1,4 @@
 
-old/Node.h
-old/Node.cpp
-old/main.cpp
-old/ABMiniMax.h
-old/ABMiniMax.cpp
+old/*
+.vscode/*
+*.exe
